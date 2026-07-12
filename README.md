@@ -13,30 +13,30 @@ Inventory is restricted to the **canonical token list at docs.robinhood.com/chai
 
 | Tier | Ticker | Odds | Prize value |
 |---|---|---|---|
-| Base | USAR (USA Rare Earth) | 27.0% | $18.54 |
-| Common | SLV (iShares Silver) | 40.0% | $53.95 |
-| Uncommon | BABA (Alibaba) | 24.0% | $96.45 |
-| Rare | NVDA (NVIDIA) | 7.0% | $196.53 |
-| Epic | TSLA (Tesla) | 1.9% | $428.32 |
-| Grail | SNDK (Sandisk) | 0.1% | $1,956.81 |
+| Base | USAR (USA Rare Earth) | 31.0% | $18.54 |
+| Common | SLV (iShares Silver) | 29.0% | $53.95 |
+| Uncommon | BABA (Alibaba) | 27.0% | $96.45 |
+| Rare | NVDA (NVIDIA) | 9.0% | $196.53 |
+| Epic | TSLA (Tesla) | 3.0% | $428.32 |
+| Grail | SNDK (Sandisk) | 1.0% | $1,956.81 |
 
-**"Money mode" odds** — commons pay 19–54¢ on the dollar at 67% combined probability, the aggressive end of the card-gacha market. **EV $73.59 (73.6% of price)** · 9% chance to pull above price · **~$31.56 gross margin/pack (31.6%)** at a 70% instant-sellback rate and 90% buyback. Headline stays: "win a $1,957 stock from a $100 pack."
+**The Courtyard model:** odds strictly decrease from cheapest to rarest (market-standard shape), **EV $97.54 (97.5% of price)** displays proudly on the pack page, and the house still clears **~$9.29/pack** — the margin lives entirely in the buyback spread (70% of winners instantly sell back at 90%), not in the odds. 13% of pulls beat the pack price; grail is 1-in-100.
 
-Tradeoff to know: the UI discloses EV honestly, so the pack page shows ~74% avg pull value, vs the 96–105% every platform in the RipCheck dataset displays (their margin hides in comps and buyback spreads instead). A softer preset — USAR 15 / SLV 40 / BABA 32 / NVDA 10 / TSLA 2.9 / SNDK 0.1 — displays ~89% EV and still clears ~$17/pack, roughly 2–3× Courtyard-style margins.
+Why this works: with strictly decreasing odds and this price ladder, the $96→$197 gap between BABA and NVDA forces real weight onto TSLA/SNDK to reach 97% EV — one SNDK per ~100 packs is what funds the honest-looking (and honest) EV badge. Per 100 packs: $10,000 in, ~$6,145 buyback cash out, ~$2,926 in kept tokens, **~$929 margin**. The dial: money-mode (USAR 27/SLV 40/BABA 24/NVDA 7/TSLA 1.9/SNDK 0.1) shows 73.6% EV but clears $31.56/pack — 3.4× the margin at the cost of the EV badge.
 
 **Minimum inventory to launch** (covers a ~50-pack opening run; buybacks recycle to the shelf):
 
 | Ticker | Qty | Cost |
 |---|---|---|
-| USAR | 25 | $464 |
-| SLV | 35 | $1,888 |
-| BABA | 20 | $1,929 |
-| NVDA | 4 | $786 |
-| TSLA | 2 | $857 |
+| USAR | 20 | $371 |
+| SLV | 20 | $1,079 |
+| BABA | 15 | $1,447 |
+| NVDA | 6 | $1,179 |
+| TSLA | 3 | $1,285 |
 | SNDK | 1 | $1,957 |
-| **Shelf total** | | **$7,881** |
+| **Shelf total** | | **$7,318** |
 
-Plus buyback USDG float $1,000 and gas/infra ~$300 → **~$9,180 all-in — comfortably inside $10K**, and at ~$31/pack margin the treasury replenishes fast. SLV is the mass tier (40%) — restock weekly from revenue. A single SNDK sell-back (~$1,761) exceeds the float: pause the grail tier after a hit until revenue restocks.
+Plus buyback USDG float $1,500 and gas/infra ~$300 → **~$9,120 all-in — inside $10K.** Watch-outs at this EV: margin is thin ($9.29/pack), so variance matters — a grail hits every ~100 packs and costs ~211 packs of margin to earn back (that's what 97.5% EV means; volume smooths it). A single SNDK sell-back (~$1,761) exceeds the float: pause the grail tier after a hit until revenue restocks it.
 
 ## Status
 
