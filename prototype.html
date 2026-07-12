@@ -338,16 +338,16 @@ Object.values(ROSTER).forEach(s=>s.icon=`https://cdn.robinhood.com/ncw_assets/lo
 
 const PACKS = [
   { price:100, name:"starter pack",
-    tiers:[["BASE","var(--base)","USAR",20.5],["COMMON","var(--yellow)","SLV",20.0],
-           ["UNCOMMON","var(--purple)","BABA",48.0],["RARE","var(--cyan)","NVDA",9.0],
-           ["EPIC","var(--pink)","TSLA",2.0],["GRAIL","var(--orange)","SNDK",0.5]]}
+    tiers:[["BASE","var(--base)","USAR",27.0],["COMMON","var(--yellow)","SLV",40.0],
+           ["UNCOMMON","var(--purple)","BABA",24.0],["RARE","var(--cyan)","NVDA",7.0],
+           ["EPIC","var(--pink)","TSLA",1.9],["GRAIL","var(--orange)","SNDK",0.1]]}
 ];
 const SOON = [
   {price:250,name:"grail hunt", note:"bigger grails. same rules."},
   {price:500,name:"whale pack", note:"bigger grails. same rules."}
 ];
 /* pilot vault (see README): minimum shelf inventory backing the live pack */
-const VAULT = [["USAR",25],["SLV",20],["BABA",30],["NVDA",6],["TSLA",2],["SNDK",1]];
+const VAULT = [["USAR",25],["SLV",35],["BABA",20],["NVDA",4],["TSLA",2],["SNDK",1]];
 const BUYBACK=0.90;
 const ARCHER='<svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>';
 let balance=0, holdings=[], curWin=null, curPack=PACKS[0], LIVE=false;

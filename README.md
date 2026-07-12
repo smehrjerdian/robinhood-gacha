@@ -13,28 +13,30 @@ Inventory is restricted to the **canonical token list at docs.robinhood.com/chai
 
 | Tier | Ticker | Odds | Prize value |
 |---|---|---|---|
-| Base | USAR (USA Rare Earth) | 20.5% | $18.54 |
-| Common | SLV (iShares Silver) | 20.0% | $53.95 |
-| Uncommon | BABA (Alibaba) | 48.0% | $96.45 |
-| Rare | NVDA (NVIDIA) | 9.0% | $196.53 |
-| Epic | TSLA (Tesla) | 2.0% | $428.32 |
-| Grail | SNDK (Sandisk) | 0.5% | $1,956.81 |
+| Base | USAR (USA Rare Earth) | 27.0% | $18.54 |
+| Common | SLV (iShares Silver) | 40.0% | $53.95 |
+| Uncommon | BABA (Alibaba) | 24.0% | $96.45 |
+| Rare | NVDA (NVIDIA) | 7.0% | $196.53 |
+| Epic | TSLA (Tesla) | 1.9% | $428.32 |
+| Grail | SNDK (Sandisk) | 0.1% | $1,956.81 |
 
-**EV $96.93 (96.9% of price)** · floor 18.5% · 11.5% chance to pull above price · buyback-adjusted 87.2% · ~$9.85 gross margin/pack (9.8%) at a 70% instant-sellback rate. Headline: "win a $1,957 stock from a $100 pack."
+**"Money mode" odds** — commons pay 19–54¢ on the dollar at 67% combined probability, the aggressive end of the card-gacha market. **EV $73.59 (73.6% of price)** · 9% chance to pull above price · **~$31.56 gross margin/pack (31.6%)** at a 70% instant-sellback rate and 90% buyback. Headline stays: "win a $1,957 stock from a $100 pack."
+
+Tradeoff to know: the UI discloses EV honestly, so the pack page shows ~74% avg pull value, vs the 96–105% every platform in the RipCheck dataset displays (their margin hides in comps and buyback spreads instead). A softer preset — USAR 15 / SLV 40 / BABA 32 / NVDA 10 / TSLA 2.9 / SNDK 0.1 — displays ~89% EV and still clears ~$17/pack, roughly 2–3× Courtyard-style margins.
 
 **Minimum inventory to launch** (covers a ~50-pack opening run; buybacks recycle to the shelf):
 
 | Ticker | Qty | Cost |
 |---|---|---|
 | USAR | 25 | $464 |
-| SLV | 20 | $1,079 |
-| BABA | 30 | $2,894 |
-| NVDA | 6 | $1,179 |
+| SLV | 35 | $1,888 |
+| BABA | 20 | $1,929 |
+| NVDA | 4 | $786 |
 | TSLA | 2 | $857 |
 | SNDK | 1 | $1,957 |
-| **Shelf total** | | **$8,430** |
+| **Shelf total** | | **$7,881** |
 
-Plus buyback USDG float $1,200 and gas/infra ~$300 → **~$9,930 all-in, so $10K is exactly the floor.** BABA is the expensive line (48% mass tier) — expect to restock it from revenue weekly. A single SNDK sell-back (~$1,761) exceeds the float: pause the grail tier after a hit until revenue restocks. Comfortable number remains $12–15K.
+Plus buyback USDG float $1,000 and gas/infra ~$300 → **~$9,180 all-in — comfortably inside $10K**, and at ~$31/pack margin the treasury replenishes fast. SLV is the mass tier (40%) — restock weekly from revenue. A single SNDK sell-back (~$1,761) exceeds the float: pause the grail tier after a hit until revenue restocks.
 
 ## Status
 
