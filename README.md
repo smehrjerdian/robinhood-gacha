@@ -7,9 +7,13 @@ Rip a pack, win **1 guaranteed full share** of a tokenized stock. Instant 90% bu
 - **`SPEC.md`** — full technical spec: architecture (Next.js + Privy auth/onramps), smart contracts (PackSale, RipEngine, PrizeVault, BuybackDesk), provably-fair randomness (commit-reveal → VRF), treasury/custody, 90% buyback mechanics, EV model derived from 11 live card-gacha platforms, capital requirements, and the $10K single-pack pilot below.
 - **`prototype.html`** — clickable prototype (open in a browser, mobile viewport). Brat-lime pop-art theme, Archer branding, onboarding with **KYC + region gating** (geo-IP and ID-country must both pass — Reg S restricted regions like the US/UK are blocked, and the UI says so honestly), one live $25 pack, coming-soon tiers, rip theater, 90% sell-back, portfolio, and **live token prices read from Robinhood Chain** (Blockscout API; production reads Chainlink AggregatorV3 feeds).
 
-## The $10K pilot — one $100 pack, 5 canonical tickers
+## The $10K pilot — $25 mini + $100 starter, 6 canonical tickers
 
-Inventory is restricted to the **canonical token list at docs.robinhood.com/chain/contracts** (same-ticker tokens at other addresses are not Robinhood Stock Tokens). The cheapest canonical token with live pricing is SLV (~$54), which sets the minimum viable pack at ~$100 — a $25 pack ships later, when sub-$50 tokens list. Live onchain token prices (2026-07-12):
+Inventory is restricted to the **canonical token list at docs.robinhood.com/chain/contracts** (same-ticker tokens at other addresses are not Robinhood Stock Tokens). USAR (USA Rare Earth) trades at ~$18.54 with 1,400+ holders, which unlocks a $25 mini pack.
+
+**$25 mini pack** (EV $24.43 · 97.7% · floor 74%): USAR 90% ($18.54) · SLV 8% ($53.95) · BABA 1.2% ($96.45) · NVDA 0.5% ($196.53) · TSLA 0.3% ($428.32) — a 17× TSLA grail on a $25 pack.
+
+**$100 starter pack** — live onchain token prices (2026-07-12):
 
 | Tier | Ticker | Odds | Prize value |
 |---|---|---|---|
@@ -21,7 +25,7 @@ Inventory is restricted to the **canonical token list at docs.robinhood.com/chai
 
 **EV $96.51 (96.5% of price)** · floor 54% · buyback-adjusted 86.9% · ~$10.25 gross margin/pack (10.2%) at a 70% instant-sellback rate. "Win a $1,957 stock from a $100 pack" is the headline.
 
-**$10K allocation:** shelf inventory $7,557 (25 SLV + 25 BABA + 5 NVDA + 2 TSLA + 1 SNDK), buyback USDG float $1,800, buffer $500, gas + infra $150. Shelf covers ~260 packs of kept-share drain (buybacks recycle to inventory); SNDK hits ~1 in 250 packs with 1 escrowed — after a grail hit, restock from revenue before re-enabling the tier. Variance is spicy at this scale: a single grail sell-back (~$1,761 cash) nearly drains the float, so either accept one-grail-at-a-time exposure or swap the grail to a second TSLA for smoother variance at the cost of the headline. Verdict: **viable, but $10K is the true floor.**
+**$10K allocation (both packs):** shelf inventory $8,486 (100 USAR + 20 SLV + 20 BABA + 4 NVDA + 2 TSLA + 1 SNDK), buyback USDG float $1,200, gas + infra ~$300. Buybacks recycle tokens to the shelf, and the mini pack's cheap base tier (USAR) means most pulls barely dent inventory. Watch-outs: a single SNDK sell-back (~$1,761 cash) exceeds the float — pause the $100 grail tier after a hit until revenue restocks it — and running two packs on $10K leaves zero slack, so $12–15K is the comfortable number. Alternatives: launch mini-only (~$4K total need) or swap SNDK for a second TSLA for smoother variance. Verdict: **viable, with the $25 mini pack as the safest wedge.**
 
 ## Status
 

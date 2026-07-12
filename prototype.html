@@ -327,6 +327,7 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
 /* ROSTER = ONLY canonical tokens from docs.robinhood.com/chain/contracts —
    tokens with matching tickers at other addresses are NOT Robinhood Stock Tokens. */
 const ROSTER = {
+  USAR:{addr:"0xd917b029c761d264c6a312bbbcda868658ef86a6",n:"USA Rare Earth",p:18.54,c:"#3E6B4F"},
   SLV :{addr:"0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f",n:"iShares Silver Trust",p:53.95,c:"#9AA5B1"},
   BABA:{addr:"0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",n:"Alibaba",p:96.45,c:"#FF6A00"},
   NVDA:{addr:"0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",n:"NVIDIA",p:196.53,c:"#76B900"},
@@ -335,27 +336,32 @@ const ROSTER = {
 };
 Object.values(ROSTER).forEach(s=>s.icon=`https://cdn.robinhood.com/ncw_assets/logos/${s.addr}.png`);
 
-const PACK = { price:100, name:"starter pack",
-  tiers:[["BASE","var(--base)","SLV",44.0],["COMMON","var(--yellow)","BABA",48.0],
-         ["RARE","var(--cyan)","NVDA",6.0],["EPIC","var(--pink)","TSLA",1.6],
-         ["GRAIL","var(--orange)","SNDK",0.4]]};
+const PACKS = [
+  { price:25, name:"mini pack",
+    tiers:[["BASE","var(--base)","USAR",90.0],["COMMON","var(--yellow)","SLV",8.0],
+           ["RARE","var(--cyan)","BABA",1.2],["EPIC","var(--pink)","NVDA",0.5],
+           ["GRAIL","var(--orange)","TSLA",0.3]]},
+  { price:100, name:"starter pack",
+    tiers:[["BASE","var(--base)","SLV",44.0],["COMMON","var(--yellow)","BABA",48.0],
+           ["RARE","var(--cyan)","NVDA",6.0],["EPIC","var(--pink)","TSLA",1.6],
+           ["GRAIL","var(--orange)","SNDK",0.4]]}
+];
 const SOON = [
-  {price:25, name:"mini pack",  note:"when sub-$50 tokens list"},
   {price:250,name:"grail hunt", note:"bigger grails. same rules."},
   {price:500,name:"whale pack", note:"bigger grails. same rules."}
 ];
-/* $10K pilot vault (see README): shelf inventory backing the live pack */
-const VAULT = [["SLV",25],["BABA",25],["NVDA",5],["TSLA",2],["SNDK",1]];
+/* $10K pilot vault (see README): shelf inventory backing both live packs */
+const VAULT = [["USAR",100],["SLV",20],["BABA",20],["NVDA",4],["TSLA",2],["SNDK",1]];
 const BUYBACK=0.90;
 const ARCHER='<svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>';
-let balance=0, holdings=[], curWin=null, LIVE=false;
+let balance=0, holdings=[], curWin=null, curPack=PACKS[0], LIVE=false;
 /* eligibility: Stock Tokens are Reg S — offers restricted in US, UK, CA, CH.
    production: geo-IP + KYC document country must BOTH pass (a VPN fails the doc check). */
 const REGIONS=[["🇸🇬","Singapore",true],["🇦🇪","UAE",true],["🇧🇷","Brazil",true],["🇲🇽","Mexico",true],
                ["🇩🇪","Germany",true],["🇱🇹","Lithuania",true],["🇺🇸","United States",false],["🇬🇧","United Kingdom",false]];
 let user={signedIn:false,email:"",region:null,verified:false};
 
-const packEV=()=>PACK.tiers.reduce((a,[,,tk,o])=>a+ROSTER[tk].p*o/100,0);
+const packEV=pk=>pk.tiers.reduce((a,[,,tk,o])=>a+ROSTER[tk].p*o/100,0);
 const $=id=>document.getElementById(id);
 const fmt=v=>"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
@@ -416,7 +422,7 @@ async function loadLive(){
       if(it){ROSTER[tk].p=parseFloat(it.exchange_rate);if(it.icon_url)ROSTER[tk].icon=it.icon_url;hits++}}
     if(hits>=3){LIVE=true;
       $("livebar").classList.add("on");
-      $("liveTxt").textContent=`live · ${hits}/5 tickers priced onchain · robinhood chain · ${new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+      $("liveTxt").textContent=`live · ${hits}/${Object.keys(ROSTER).length} tickers priced onchain · robinhood chain · ${new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
     }else{throw new Error("thin")}
   }catch(e){
     $("liveTxt").textContent="onchain price snapshot · 2026-07-12 (live fetch unavailable)";
@@ -426,15 +432,15 @@ async function loadLive(){
 
 /* ---------- STORE ---------- */
 function renderStore(){
-  const ev=packEV(), top=Math.max(...PACK.tiers.map(([,,tk])=>ROSTER[tk].p));
-  const topTk=PACK.tiers[PACK.tiers.length-1][2];
-  $("packGrid").innerHTML=`
-    <button class="pack live" onclick="openPack()">
-      <div class="art">${ARCHER}$${PACK.price}</div>
-      <div><h3>${PACK.name}</h3><div class="sub">1 guaranteed full share · top prize ${fmt(top)} ${topTk}</div>
-        <div class="row"><span class="pill ev">~${(ev/PACK.price*100).toFixed(0)}% ev</span><span class="pill bb">90% buyback</span></div></div>
-      <div class="price">$${PACK.price}</div>
-    </button>`
+  $("packGrid").innerHTML=PACKS.map((pk,i)=>{
+    const ev=packEV(pk), topTk=pk.tiers[pk.tiers.length-1][2], top=ROSTER[topTk].p;
+    return `
+    <button class="pack live" onclick="openPack(${i})">
+      <div class="art">${ARCHER}$${pk.price}</div>
+      <div><h3>${pk.name}</h3><div class="sub">1 guaranteed full share · top prize ${fmt(top)} ${topTk}</div>
+        <div class="row"><span class="pill ev">~${(ev/pk.price*100).toFixed(0)}% ev</span><span class="pill bb">90% buyback</span></div></div>
+      <div class="price">$${pk.price}</div>
+    </button>`}).join("")
     + SOON.map(p=>`
     <div class="pack soon">
       <div class="stamp">coming soon</div>
@@ -448,36 +454,37 @@ function renderStore(){
     <div class="note">every prize is pre-held in the treasury — <b>${fmt(invTotal)}</b> of stock tokens on the shelf right now. don't trust the top prize exists? read the chain.</div>`;
 }
 
-function openPack(){
-  const ev=packEV();
+function openPack(i){
+  curPack=PACKS[i];
+  const ev=packEV(curPack);
   $("pdBody").innerHTML=`
     <div class="stage"><span class="burst" style="top:8px;left:10px">★</span><span class="burst" style="bottom:4px;right:14px;font-size:80px">!</span>
-      <div class="bigpack">${ARCHER}$${PACK.price}</div></div>
-    <h2>${PACK.name} <span class="badge-bb">🔥 90% buyback</span></h2>
+      <div class="bigpack">${ARCHER}$${curPack.price}</div></div>
+    <h2>${curPack.name} <span class="badge-bb">🔥 90% buyback</span></h2>
     <div class="guarantee">🎯 <b>1 full share guaranteed</b> — every pack pays out a whole share of a real robinhood chain stock token. no fractions, no dust.</div>
     <div class="odds">
       <div class="ot"><span>pack odds · ${LIVE?"live onchain":"snapshot"}</span><a href="#" onclick="openFair();return false">provably fair ◈</a></div>
-      <div class="obar">${PACK.tiers.map(([,c,,o])=>`<div style="flex:${o};background:${c}"></div>`).join("")}</div>
-      ${PACK.tiers.map(([tn,c,tk,o])=>{const s=ROSTER[tk];
+      <div class="obar">${curPack.tiers.map(([,c,,o])=>`<div style="flex:${o};background:${c}"></div>`).join("")}</div>
+      ${curPack.tiers.map(([tn,c,tk,o])=>{const s=ROSTER[tk];
         return `<div class="tierrow"><img class="ticon" src="${s.icon}" onerror="this.style.visibility='hidden'">
           <span class="tname" style="color:${c}">${tn}</span>
           <span class="tband"><span class="tk">${tk}</span> · ${s.n}<br>1.00 share = ${fmt(s.p)}</span>
           <span class="tpct">${o}%</span></div>`}).join("")}
     </div>
-    <div class="apv"><span class="l">avg pull value</span><span class="v mono">${fmt(ev)}</span><span class="d">${(ev/PACK.price*100).toFixed(1)}% of price</span></div>
-    <button class="buy" id="buyBtn" onclick="buyRip()">${needOb()?`sign up to rip — $${PACK.price}.00`:balance>=PACK.price?`rip it — $${PACK.price}.00`:`deposit to rip — $${PACK.price}.00`}</button>
+    <div class="apv"><span class="l">avg pull value</span><span class="v mono">${fmt(ev)}</span><span class="d">${(ev/curPack.price*100).toFixed(1)}% of price</span></div>
+    <button class="buy" id="buyBtn" onclick="buyRip()">${needOb()?`sign up to rip — $${curPack.price}.00`:balance>=curPack.price?`rip it — $${curPack.price}.00`:`deposit to rip — $${curPack.price}.00`}</button>
     <div class="finebtm">${LIVE?"live prices read from robinhood chain (chainlink-fed, 24/5)":"snapshot prices"} · token prices are total-return adjusted · odds fixed, ev floats with the market</div>`;
   show("detail");
 }
 
 /* ---------- RIP ---------- */
 function weightedTier(){let r=Math.random()*100,acc=0;
-  for(let i=0;i<PACK.tiers.length;i++){acc+=PACK.tiers[i][3];if(r<acc)return i}return 0}
+  for(let i=0;i<curPack.tiers.length;i++){acc+=curPack.tiers[i][3];if(r<acc)return i}return 0}
 function buyRip(){
   if(needOb()){openOnboarding();return}
-  if(balance<PACK.price){openDep();return}
-  balance-=PACK.price;renderBal();
-  const ti=weightedTier(),[tn,c,tk]=PACK.tiers[ti],s=ROSTER[tk];
+  if(balance<curPack.price){openDep();return}
+  balance-=curPack.price;renderBal();
+  const ti=weightedTier(),[tn,c,tk]=curPack.tiers[ti],s=ROSTER[tk];
   curWin={tk,name:s.n,price:s.p,tierName:tn,tierColor:c,icon:s.icon,c:s.c,big:ti>=2};
   const th=$("theater");th.classList.add("on");$("card3d").classList.remove("flip");$("resBtns").classList.remove("on");
   $("tstate").textContent="verifying seed… ✓ commit matched";
@@ -522,7 +529,7 @@ function openDep(){if(needOb()){openOnboarding();return}$("depModal").classList.
 function payTab(btn,k){document.querySelectorAll(".paytab").forEach(b=>b.classList.remove("on"));btn.classList.add("on");
   ["Apple","Card","Crypto"].forEach(x=>$("pay"+x).style.display="none");$("pay"+k[0].toUpperCase()+k.slice(1)).style.display="block"}
 function addFunds(){balance+=250;renderBal();$("depModal").classList.remove("on");toast("$250.00 USDG deposited");
-  const b=$("buyBtn");if(b)b.textContent=balance>=PACK.price?`rip it — $${PACK.price}.00`:`deposit to rip — $${PACK.price}.00`}
+  const b=$("buyBtn");if(b)b.textContent=balance>=curPack.price?`rip it — $${curPack.price}.00`:`deposit to rip — $${curPack.price}.00`}
 function openFair(){$("fairClient").textContent=Math.random().toString(16).slice(2,6)+"-"+Math.random().toString(16).slice(2,6);$("fairModal").classList.add("on")}
 
 renderBal();renderStore();loadLive();
