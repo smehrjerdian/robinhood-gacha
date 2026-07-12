@@ -1,45 +1,83 @@
 # Archer — Stock Packs on Robinhood Chain
+### Grant proposal · $25K ask · live prototype at [sayeed.work/robinhood-gacha](https://sayeed.work/robinhood-gacha)
 
-Rip a pack, win **1 guaranteed full share** of a tokenized stock. Instant 90% buyback at oracle price. Archer is an independent concept app built on Robinhood Chain — not affiliated with or endorsed by Robinhood Markets.
+Rip a pack, win **1 guaranteed full share** of a tokenized stock. Instant buyback at oracle price. Archer is an independent consumer app built on Robinhood Chain Stock Tokens — the first gacha/pack-ripping primitive for tokenized equities, bringing the mechanics that power the $5B+ card-ripping market to real-world assets.
 
-## Contents
+**Why chains should want this:** every pack is a stock-token transaction, every buyback is a swap, every prize sits self-custodied in a user wallet. Archer converts entertainment demand into RWA volume, wallet activations, and sticky onchain balances — the exact consumer behavior Robinhood Chain, Arbitrum, and Uniswap are funding.
 
-- **`SPEC.md`** — full technical spec: architecture (Next.js + Privy auth/onramps), smart contracts (PackSale, RipEngine, PrizeVault, BuybackDesk), provably-fair randomness (commit-reveal → VRF), treasury/custody, 90% buyback mechanics, EV model derived from 11 live card-gacha platforms, capital requirements, and the $10K single-pack pilot below.
-- **`prototype.html`** — clickable prototype (open in a browser, mobile viewport). Brat-lime pop-art theme, Archer branding, onboarding with **KYC + region gating** (geo-IP and ID-country must both pass — Reg S restricted regions like the US/UK are blocked, and the UI says so honestly), one live $25 pack, coming-soon tiers, rip theater, 90% sell-back, portfolio, and **live token prices read from Robinhood Chain** (Blockscout API; production reads Chainlink AggregatorV3 feeds).
+---
 
-## The pilot — one $100 pack, 6 canonical tickers
+## What's already built
 
-Inventory is restricted to the **canonical token list at docs.robinhood.com/chain/contracts** (same-ticker tokens at other addresses are not Robinhood Stock Tokens). $100 minimum pack; USAR is the cheap "dud" tier that funds the win tiers. Live onchain token prices (2026-07-12):
+- **Clickable prototype** (this repo, live): pack store, odds disclosure, rip theater, portfolio, instant sell-back, KYC/region-gated onboarding (geo-IP + ID-country cross-check for Reg S compliance), and **live token prices read from Robinhood Chain** — canonical Stock Token contracts only, per [docs.robinhood.com/chain/contracts](https://docs.robinhood.com/chain/contracts).
+- **Full technical spec** (`SPEC.md`): PackSale / RipEngine / PrizeVault / BuybackDesk contracts, commit-reveal provably-fair randomness (upgradeable to VRF), Safe-based treasury custody, Privy auth + onramps (Apple Pay, card, any-chain crypto deposits auto-bridged).
+- **Market research**: EV/odds analysis of 11 live card-gacha platforms (RipCheck dataset) informing the pack economics below.
 
-| Tier | Ticker | Odds | Prize value |
+## The pack (live economics)
+
+One $100 pack, six canonical Stock Tokens, odds strictly decreasing by rarity, priced off live Chainlink feeds:
+
+| Tier | Ticker | Odds | Prize (snapshot) |
 |---|---|---|---|
-| Base | USAR (USA Rare Earth) | 31.0% | $18.54 |
-| Common | SLV (iShares Silver) | 29.0% | $53.95 |
-| Uncommon | BABA (Alibaba) | 27.0% | $96.45 |
-| Rare | NVDA (NVIDIA) | 9.0% | $196.53 |
-| Epic | TSLA (Tesla) | 3.0% | $428.32 |
-| Grail | SNDK (Sandisk) | 1.0% | $1,956.81 |
+| Base | USAR | 31% | $18.54 |
+| Common | SLV | 29% | $53.95 |
+| Uncommon | BABA | 27% | $96.45 |
+| Rare | NVDA | 9% | $196.53 |
+| Epic | TSLA | 3% | $428.32 |
+| Grail | SNDK | 1% | $1,956.81 |
 
-**The Courtyard model:** odds strictly decrease from cheapest to rarest (market-standard shape), **EV $97.54 (97.5% of price)** displays proudly on the pack page, and the house still clears **~$9.29/pack** — the margin lives entirely in the buyback spread (70% of winners instantly sell back at 90%), not in the odds. 13% of pulls beat the pack price; grail is 1-in-100.
+**EV $97.54 (97.5% of price)** — displayed honestly in-app. House margin (~$9.29/pack) lives in the 90% buyback spread, not the odds. Every 100-pack series holds exactly these 100 shares; series composition is committed onchain before sale, so odds are provable, and the prize vault ("the quiver") is publicly verifiable.
 
-Why this works: with strictly decreasing odds and this price ladder, the $96→$197 gap between BABA and NVDA forces real weight onto TSLA/SNDK to reach 97% EV — one SNDK per ~100 packs is what funds the honest-looking (and honest) EV badge. Per 100 packs: $10,000 in, ~$6,145 buyback cash out, ~$2,926 in kept tokens, **~$929 margin**. The dial: money-mode (USAR 27/SLV 40/BABA 24/NVDA 7/TSLA 1.9/SNDK 0.1) shows 73.6% EV but clears $31.56/pack — 3.4× the margin at the cost of the EV badge.
+## Use of funds — $25K
 
-**$20K launch treasury** (covers a ~150-pack opening run with zero recycling assumptions; buybacks recycle ~70% of payouts back to the shelf, stretching effective coverage ~3×):
+| Allocation | Amount |
+|---|---|
+| Prize inventory (50 USAR, 45 SLV, 40 BABA, 15 NVDA, 5 TSLA, 2 SNDK) | $16,216 |
+| Buyback USDG float | $3,000 |
+| Gas, infra, monitoring | $784 |
+| Build-out: contracts + audit + provably-fair verifier page | $5,000 |
+| **Total** | **$25,000** |
 
-| Ticker | Qty | Cost | Covers |
-|---|---|---|---|
-| USAR | 50 | $927 | 161 packs |
-| SLV | 45 | $2,428 | 155 packs |
-| BABA | 40 | $3,858 | 148 packs |
-| NVDA | 15 | $2,948 | 167 packs |
-| TSLA | 5 | $2,142 | 167 packs |
-| SNDK | 2 | $3,914 | 200 packs |
-| **Shelf total** | | **$16,216** | |
+The inventory covers a **~150-pack opening run** with every tier fully stocked and the grail double-escrowed. Run economics: $15,000 GMV in → ~$9,218 buyback cash out → ~$4,389 restock of winner-kept shares → **~$1,393 expected operating profit per cycle (9.3% of GMV)**. Treasury runs as a waterfall: rebuild float → restock shelf to par → variance reserve → only cash above par is profit. At steady state the treasury is self-sustaining; the grant seeds the flywheel once.
 
-Plus buyback USDG float **$3,000** and gas/infra ~$500 → **~$19,716 all-in.** The upgrade over the $10K version: 2 SNDK escrowed (the grail tier survives a hit without pausing), and a grail sell-back (~$1,761) now fits inside the float with room to spare. Margin is ~$9.29/pack at these odds, so a grail costs ~211 packs of margin to earn back — volume smooths it, and the fatter treasury is what lets you ride out the variance instead of flinching. The pack page also renders a "what's in the pack" series sheet: every 100-pack series holds exactly 31 USAR + 29 SLV + 27 BABA + 9 NVDA + 3 TSLA + 1 SNDK — the contents literally are the odds, committable onchain per series.
+## $ARCHER token — the complementary revenue engine
 
-## Status
+Fair-launched on Robinhood Chain via **Bankr**, with creator swap-fee share routed to the Archer treasury. Early comparable launches generate **$10–15K in swap fees** — enough to fully fund shelf replenishment during the opening months, making token volume and gacha liquidity mutually reinforcing.
 
-Concept draft, July 2026. Prices refresh live; verify before relying on figures.
+**Holder utility (drives demand):**
 
-**Compliance note:** Robinhood Stock Tokens are Reg S instruments not offerable to US, UK, Canadian, or Swiss persons. The prototype models compliant gating (geo-IP + KYC document-country cross-check) — helping restricted users evade via VPN would defeat the legal structure the product depends on. Securities/gaming counsel required before launch.
+- **Staking tiers → better buyback.** Stake $ARCHER to raise your instant sell-back rate: 90% base → **92% Bronze / 94% Silver / 96% Gold**. The single number every ripper cares about becomes a reason to hold.
+- **Burn-to-re-roll.** Don't like your pull? Burn $ARCHER for one re-roll at the same odds. A pure token sink with real emotional utility at the peak-excitement moment.
+- **Staker-gated packs.** Limited series (rarer grails, collab packs) rippable only by staked wallets.
+- **Fee-free swap days & early access** for top-tier stakers.
+
+**Deflationary loop (drives attention):** 50% of all swap-fee revenue market-buys $ARCHER and burns it; burn-to-re-roll compounds the sink; a live burn counter renders in-app and every burn is a social object ("🔥 12.4M $ARCHER burned"). The other 50% of fees restocks the prize vault — visible on the quiver page, so token volume literally refills the grails.
+
+## Uniswap v4 hooks (why this fits a Uniswap grant)
+
+Archer's token + treasury design is a natural v4 hooks showcase:
+
+1. **Flywheel hook (`afterSwap`)** on the ARCHER/USDG pool: skims the fee split onchain — 50% buy-and-burn, 50% streamed to the PrizeVault. The revenue loop becomes trustless and publicly auditable instead of a manual payout.
+2. **Loyalty dynamic-fee hook (`beforeSwap`)**: staked wallets get discounted LP fees on the ARCHER pool — staking utility enforced at the AMM layer, a genuinely novel consumer use of dynamic fees.
+3. **TWAMM rebalancing hook**: the BuybackDesk re-sells bought-back Stock Tokens through time-weighted orders, minimizing impact in thin RWA pools — a public-good pattern for every RWA app on v4.
+4. **Onchain revenue oracle**: hook-level fee accounting gives grantors and users a live, verifiable dashboard of protocol revenue.
+
+Pools deploy on Robinhood Chain (permissionless, Uniswap-compatible) with an Arbitrum One mirror for depth.
+
+## Milestones
+
+| # | Deliverable | Timeline |
+|---|---|---|
+| 1 | Contracts on testnet + provably-fair verifier | Weeks 1–3 |
+| 2 | Mainnet launch, $100 pack live, KYC/geofence enforced | Weeks 4–6 |
+| 3 | $ARCHER launch via Bankr + staking tiers + burn-to-re-roll | Weeks 6–8 |
+| 4 | v4 flywheel + dynamic-fee hooks live | Weeks 8–12 |
+
+**KPIs:** packs ripped, GMV, unique KYC'd wallets, Stock Token transfer volume, buyback swap volume, $ARCHER burned, fee revenue routed to vault.
+
+## Compliance
+
+Robinhood Stock Tokens are Reg S instruments not offerable to US, UK, Canadian, or Swiss persons; Archer enforces geo-IP + KYC document-country cross-checks (VPNs fail the document check) and the app states restrictions plainly. Chance-based mechanics, buyback structuring, and token utility will be reviewed by securities/gaming counsel before mainnet — budgeted within build-out. Archer is not affiliated with or endorsed by Robinhood Markets.
+
+---
+*Contact: Sayeed Mehrjerdian · sayeed@metaseedlabs.com · [sayeed.work](https://sayeed.work)*

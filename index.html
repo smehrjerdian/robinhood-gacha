@@ -207,6 +207,36 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
 .kycrow{display:flex;align-items:center;gap:10px;background:var(--wht);border:3px solid var(--blk);padding:11px 13px;margin-top:8px;font-size:13px;font-weight:800;color:var(--blk)}
 .kycrow .st{margin-left:auto;font-size:10px;font-weight:900;padding:3px 8px;border:2px solid var(--blk);background:var(--yellow)}
 .kycrow .st.ok{background:var(--lime)}
+
+/* $archer token page */
+.tkwrap{padding:16px 18px}
+.tkhero{background:var(--blk);padding:18px;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.tkhero .sym{font-family:'Archivo Black';font-size:26px;color:var(--lime)}
+.tkhero .pr{font-family:'JetBrains Mono';font-size:15px;color:var(--wht);font-weight:700;margin-top:2px}
+.tkhero .pr small{color:#9a9a9a;font-size:10px}
+.tkstats{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tkstat{flex:1;min-width:96px;background:#161616;border:2px solid #2b2b2b;padding:8px 10px}
+.tkstat .l{font-size:8.5px;color:#9a9a9a;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.tkstat .v{font-size:13.5px;color:var(--wht);font-weight:900;margin-top:2px}
+.tkstat .v.burn{color:var(--pink)}
+.tkpanel{background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:16px;margin-top:14px;color:var(--blk)}
+.tkpanel h4{font-family:'Archivo Black';font-size:14px;text-transform:lowercase;margin-bottom:8px}
+.tkpanel .note{font-size:11px;font-weight:700;color:#555;margin-top:8px;line-height:1.5}
+.qbtns{display:flex;gap:8px}
+.qbtn{flex:1;background:var(--limehot);border:3px solid var(--blk);padding:11px 0;font-weight:900;font-size:13px;color:var(--blk);box-shadow:3px 3px 0 var(--blk)}
+.qbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--blk)}
+.tierlad{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.tierlad td,.tierlad th{border:2.5px solid var(--blk);padding:7px 9px;text-align:left;font-weight:800}
+.tierlad th{background:var(--blk);color:var(--lime);font-size:10px;letter-spacing:1px;text-transform:uppercase}
+.tierlad tr.cur{background:var(--limehot)}
+.stakerow{display:flex;gap:8px;margin-top:10px}
+.stakerow .qbtn.alt{background:var(--pink);color:var(--blk)}
+.flywheel{background:var(--blk);padding:16px;box-shadow:6px 6px 0 rgba(0,0,0,.25);margin-top:14px}
+.flywheel .hd{font-size:12px;color:var(--lime);margin-bottom:10px}
+.flystep{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:2px solid #1f1f1f;font-size:12px;color:#ccc;font-weight:700}
+.flystep:last-child{border:none}
+.flystep .n{width:22px;height:22px;flex-shrink:0;background:var(--lime);color:var(--blk);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--blk)}
+.flystep b{color:var(--wht)}
 </style>
 </head>
 <body>
@@ -239,11 +269,11 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
   <div class="view on" id="v-store">
     <div class="hero">
       <h1>rip a pack.<br>win <em>1 full share</em><br>every time.</h1>
-      <p>real tokenized stocks · live onchain prices · instant 90% buyback · odds fully disclosed</p>
+      <p>real tokenized stocks · live onchain prices · instant 90–96% buyback · odds fully disclosed</p>
     </div>
     <div class="trust">
       <span class="tchip">✓ 1 full share guaranteed</span>
-      <span class="tchip">90% instant buyback</span>
+      <span class="tchip">90% buyback · 96% staked</span>
       <span class="tchip">◈ provably fair</span>
     </div>
     <div class="packs" id="packGrid"></div>
@@ -268,8 +298,12 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
   <div class="nav">
     <button class="on" id="nb-store" onclick="show('store')"><span class="ic">◨</span>packs</button>
     <button id="nb-portfolio" onclick="show('portfolio')"><span class="ic">◧</span>portfolio</button>
+    <button id="nb-token" onclick="show('token')"><span class="ic">◆</span>$archer</button>
     <button onclick="openFair()"><span class="ic">◈</span>fairness</button>
   </div>
+
+  <!-- $ARCHER TOKEN -->
+  <div class="view" id="v-token"><div class="tkwrap" id="tokenBody"></div></div>
 
   <!-- RIP THEATER -->
   <div class="theater" id="theater">
@@ -286,6 +320,7 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
     <div class="resbtns" id="resBtns">
       <button class="rb sell" id="sellBtn"></button>
       <button class="rb keep" onclick="keepIt()">keep in wallet</button>
+      <button class="rb keep" id="rerollBtn" style="border-color:var(--pink);color:var(--pink)" onclick="reRoll()">🔥 burn 500 $archer · re-roll</button>
     </div>
   </div>
 
@@ -363,8 +398,16 @@ const SOON = [
 ];
 /* pilot vault (see README): minimum shelf inventory backing the live pack */
 const VAULT = [["USAR",50],["SLV",45],["BABA",40],["NVDA",15],["TSLA",5],["SNDK",2]];
-const BUYBACK=0.90;
+const BUYBACK=0.90; // base rate — staking $ARCHER boosts it (see STAKE_TIERS)
 const ARCHER='<svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>';
+/* $ARCHER token (fair launch via Bankr on Robinhood Chain; v4 flywheel pool) */
+const TOKEN={price:0.004, supply:1e9, burned:12_400_000, feePct:1};
+const STAKE_TIERS=[[250000,"gold",0.96],[50000,"silver",0.94],[10000,"bronze",0.92],[0,"none",BUYBACK]];
+const REROLL_COST=500;
+let archerBal=0, archerStaked=0;
+const stakeTier=()=>STAKE_TIERS.find(([min])=>archerStaked>=min);
+const bbRate=()=>stakeTier()[2];
+const bbPct=()=>(bbRate()*100).toFixed(0)+"%";
 let balance=0, holdings=[], curWin=null, curPack=PACKS[0], LIVE=false;
 /* eligibility: Stock Tokens are Reg S — offers restricted in US, UK, CA, CH.
    production: geo-IP + KYC document country must BOTH pass (a VPN fails the doc check). */
@@ -377,8 +420,8 @@ const $=id=>document.getElementById(id);
 const fmt=v=>"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
 function show(v){document.querySelectorAll(".view").forEach(x=>x.classList.remove("on"));$("v-"+v).classList.add("on");
-  ["store","portfolio"].forEach(n=>{const b=$("nb-"+n);if(b)b.classList.toggle("on",n===v)});
-  if(v==="portfolio")renderPF();window.scrollTo(0,0)}
+  ["store","portfolio","token"].forEach(n=>{const b=$("nb-"+n);if(b)b.classList.toggle("on",n===v)});
+  if(v==="portfolio")renderPF();if(v==="token")renderToken();window.scrollTo(0,0)}
 function renderBal(){$("balTxt").textContent=fmt(balance)}
 
 /* ---------- ONBOARDING / KYC ---------- */
@@ -449,7 +492,7 @@ function renderStore(){
     <button class="pack live" onclick="openPack(${i})">
       <div class="art">${ARCHER}$${pk.price}</div>
       <div><h3>${pk.name}</h3><div class="sub">1 guaranteed full share · top prize ${fmt(top)} ${topTk}</div>
-        <div class="row"><span class="pill ev">~${(ev/pk.price*100).toFixed(0)}% ev</span><span class="pill bb">90% buyback</span></div></div>
+        <div class="row"><span class="pill ev">~${(ev/pk.price*100).toFixed(0)}% ev</span><span class="pill bb">${bbPct()} buyback</span></div></div>
       <div class="price">$${pk.price}</div>
     </button>`}).join("")
     + SOON.map(p=>`
@@ -471,7 +514,7 @@ function openPack(i){
   $("pdBody").innerHTML=`
     <div class="stage"><span class="burst" style="top:8px;left:10px">★</span><span class="burst" style="bottom:4px;right:14px;font-size:80px">!</span>
       <div class="bigpack">${ARCHER}$${curPack.price}</div></div>
-    <h2>${curPack.name} <span class="badge-bb">🔥 90% buyback</span></h2>
+    <h2>${curPack.name} <span class="badge-bb">🔥 ${bbPct()} buyback${archerStaked>=10000?" · "+stakeTier()[1]+" boost":""}</span></h2>
     <div class="guarantee">🎯 <b>1 full share guaranteed</b> — every pack pays out a whole share of a real robinhood chain stock token. no fractions, no dust.</div>
     <div class="odds">
       <div class="ot"><span>pack odds · ${LIVE?"live onchain":"snapshot"}</span><a href="#" onclick="openFair();return false">provably fair ◈</a></div>
@@ -521,17 +564,39 @@ function buyRip(){
       <div class="tierlbl" style="background:${curWin.tierColor}">${curWin.tierName}</div>`;
     $("card3d").classList.add("flip");
     $("tstate").textContent=curWin.big?"🔥 big hit":"";
-    $("sellBtn").textContent=`sell back instantly · ${fmt(curWin.price*BUYBACK)} (90%)`;
+    $("sellBtn").textContent=`sell back instantly · ${fmt(curWin.price*bbRate())} (${bbPct()})`;
+    $("rerollBtn").style.display=(archerBal>=REROLL_COST&&!curWin.rerolled)?"block":"none";
     $("resBtns").classList.add("on");
     if(curWin.big)confetti();
   },1600);
+}
+function reRoll(){
+  if(archerBal<REROLL_COST)return;
+  archerBal-=REROLL_COST;TOKEN.burned+=REROLL_COST;
+  toast(`🔥 burned ${REROLL_COST} $archer — re-rolling`);
+  $("card3d").classList.remove("flip");$("resBtns").classList.remove("on");
+  $("tstate").textContent="re-rolling… new seed committed";
+  setTimeout(()=>{
+    const ti=weightedTier(),[tn,c,tk]=curPack.tiers[ti],s=ROSTER[tk];
+    curWin={tk,name:s.n,price:s.p,tierName:tn,tierColor:c,icon:s.icon,c:s.c,big:ti>=3,rerolled:true};
+    $("cardFront").innerHTML=`<span class="tickcirc" style="background:${curWin.c}"><img src="${curWin.icon}" onerror="this.remove()"></span>
+      <div class="co">${curWin.name}</div><div class="shares">1.00 share · ${curWin.tk}</div>
+      <div class="val mono">${fmt(curWin.price)}</div>
+      <div class="tierlbl" style="background:${curWin.tierColor}">${curWin.tierName}</div>`;
+    $("card3d").classList.add("flip");
+    $("tstate").textContent=curWin.big?"🔥 big hit":"one re-roll per pack";
+    $("sellBtn").textContent=`sell back instantly · ${fmt(curWin.price*bbRate())} (${bbPct()})`;
+    $("rerollBtn").style.display="none";
+    $("resBtns").classList.add("on");
+    if(curWin.big)confetti();
+  },900);
 }
 function confetti(){const cols=["#8ACE00","#FF3EB5","#45E3FF","#FFE500","#fff"];
   for(let i=0;i<80;i++){const d=document.createElement("div");d.className="confetti";
   d.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%5]};animation-duration:${1.5+Math.random()*1.6}s;animation-delay:${Math.random()*.7}s`;
   $("theater").appendChild(d)}}
 function closeTheater(){$("theater").classList.remove("on")}
-$("sellBtn").onclick=()=>{balance+=curWin.price*BUYBACK;renderBal();closeTheater();toast(`sold ${curWin.tk} — ${fmt(curWin.price*BUYBACK)} added`)};
+$("sellBtn").onclick=()=>{balance+=curWin.price*bbRate();renderBal();closeTheater();toast(`sold ${curWin.tk} — ${fmt(curWin.price*bbRate())} added (${bbPct()})`)};
 function keepIt(){holdings.push(curWin);closeTheater();toast(`1 ${curWin.tk} added to portfolio`);show("portfolio")}
 
 /* ---------- PORTFOLIO ---------- */
@@ -542,11 +607,11 @@ function renderPF(){
     return `<div class="hold"><span class="tc" style="background:${h.c}"><img src="${h.icon}" onerror="this.remove()"></span>
       <div><div class="nm">${h.name}</div><div class="sub">1.00 share · ${h.tierName} pull · ${h.tk}</div></div>
       <div class="rt"><div class="rv mono">${fmt(live)}</div>
-      <button class="sellmini" onclick="pfSell(${i})">sell 90% · ${fmt(live*BUYBACK)}</button></div></div>`}).join("")
+      <button class="sellmini" onclick="pfSell(${i})">sell ${bbPct()} · ${fmt(live*bbRate())}</button></div></div>`}).join("")
     :`<div class="empty">no shares yet.<br>rip a pack — every single one pays a full share.</div>`;
 }
 function pfSell(i){const h=holdings.splice(i,1)[0];const live=ROSTER[h.tk]?.p??h.price;
-  balance+=live*BUYBACK;renderBal();renderPF();toast(`sold ${h.tk} — ${fmt(live*BUYBACK)} added`)}
+  balance+=live*bbRate();renderBal();renderPF();toast(`sold ${h.tk} — ${fmt(live*bbRate())} added (${bbPct()})`)}
 
 /* ---------- DEPOSIT + FAIRNESS ---------- */
 function openDep(){if(needOb()){openOnboarding();return}$("depModal").classList.add("on")}
@@ -555,6 +620,66 @@ function payTab(btn,k){document.querySelectorAll(".paytab").forEach(b=>b.classLi
 function addFunds(){balance+=250;renderBal();$("depModal").classList.remove("on");toast("$250.00 USDG deposited");
   const b=$("buyBtn");if(b)b.textContent=balance>=curPack.price?`rip it — $${curPack.price}.00`:`deposit to rip — $${curPack.price}.00`}
 function openFair(){$("fairClient").textContent=Math.random().toString(16).slice(2,6)+"-"+Math.random().toString(16).slice(2,6);$("fairModal").classList.add("on")}
+
+/* ---------- $ARCHER TOKEN ---------- */
+const fmtTok=v=>v>=1e6?(v/1e6).toFixed(1)+"M":v.toLocaleString(undefined,{maximumFractionDigits:0});
+function renderToken(){
+  const [min,tname,rate]=stakeTier();
+  const mcap=TOKEN.price*(TOKEN.supply-TOKEN.burned);
+  $("tokenBody").innerHTML=`
+  <div class="tkhero">
+    <div class="sym">$archer</div>
+    <div class="pr">$${TOKEN.price.toFixed(4)} <small>· fair launch via bankr · robinhood chain · uniswap v4 pool</small></div>
+    <div class="tkstats">
+      <div class="tkstat"><div class="l">market cap</div><div class="v">$${fmtTok(mcap)}</div></div>
+      <div class="tkstat"><div class="l">🔥 burned</div><div class="v burn">${fmtTok(TOKEN.burned)}</div></div>
+      <div class="tkstat"><div class="l">your bag</div><div class="v">${fmtTok(archerBal)}</div></div>
+      <div class="tkstat"><div class="l">staked</div><div class="v">${fmtTok(archerStaked)} · ${tname}</div></div>
+    </div>
+  </div>
+  <div class="tkpanel">
+    <h4>buy $archer</h4>
+    <div class="qbtns">
+      <button class="qbtn" onclick="buyArcher(25)">$25</button>
+      <button class="qbtn" onclick="buyArcher(100)">$100</button>
+      <button class="qbtn" onclick="buyArcher(250)">$250</button>
+    </div>
+    <div class="note">swaps USDG from your in-app wallet through the uniswap v4 pool via bankr. 1% swap fee: 0.5% buys & burns $archer, 0.5% restocks the quiver — every trade refills the grails.</div>
+  </div>
+  <div class="tkpanel">
+    <h4>stake to boost your buyback</h4>
+    <table class="tierlad">
+      <tr><th>tier</th><th>staked</th><th>buyback</th><th>perks</th></tr>
+      <tr class="${tname==="bronze"?"cur":""}"><td>bronze</td><td>10k</td><td>92%</td><td>burn-to-re-roll</td></tr>
+      <tr class="${tname==="silver"?"cur":""}"><td>silver</td><td>50k</td><td>94%</td><td>+ staker-gated packs</td></tr>
+      <tr class="${tname==="gold"?"cur":""}"><td>gold</td><td>250k</td><td>96%</td><td>+ fee-free swaps, early series access</td></tr>
+    </table>
+    <div class="stakerow">
+      <button class="qbtn" onclick="stakeAll()">stake all (${fmtTok(archerBal)})</button>
+      <button class="qbtn alt" onclick="unstakeAll()">unstake (${fmtTok(archerStaked)})</button>
+    </div>
+    <div class="note">your current sell-back rate: <b>${bbPct()}</b>. boost applies instantly to every rip and portfolio sale.</div>
+  </div>
+  <div class="flywheel">
+    <div class="hd">the flywheel · enforced by uniswap v4 hooks</div>
+    <div class="flystep"><span class="n">1</span><span>every $archer swap pays a <b>1% fee</b>, skimmed onchain by an <b>afterSwap hook</b></span></div>
+    <div class="flystep"><span class="n">2</span><span><b>0.5% buys & burns $archer</b> — supply only goes down 🔥</span></div>
+    <div class="flystep"><span class="n">3</span><span><b>0.5% streams to the quiver</b> — token volume restocks the prize vault</span></div>
+    <div class="flystep"><span class="n">4</span><span>stakers get <b>discounted pool fees</b> via a dynamic-fee hook + boosted buybacks in-app</span></div>
+    <div class="flystep"><span class="n">5</span><span>burn-to-re-roll sinks supply at the moment of peak excitement</span></div>
+  </div>`;
+}
+function buyArcher(usd){
+  if(needOb()){openOnboarding();return}
+  if(balance<usd){openDep();return}
+  balance-=usd;renderBal();
+  const gross=usd/TOKEN.price, fee=gross*TOKEN.feePct/100;
+  archerBal+=gross-fee;TOKEN.burned+=fee/2;
+  toast(`swapped ${fmt(usd)} → ${fmtTok(gross-fee)} $archer (🔥 ${fmtTok(fee/2)} burned)`);
+  renderToken();
+}
+function stakeAll(){archerStaked+=archerBal;archerBal=0;toast(`staked — you're ${stakeTier()[1]} tier · ${bbPct()} buyback`);renderToken()}
+function unstakeAll(){archerBal+=archerStaked;archerStaked=0;toast("unstaked — back to 90% base buyback");renderToken()}
 
 renderBal();renderStore();loadLive();
 </script>
