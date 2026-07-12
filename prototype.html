@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>archer · stock packs on robinhood chain</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:opsz,wght@9..40,400;9..40,700;9..40,900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --lime:#8ACE00; --limehot:#C6FF3F; --blk:#0A0A0A; --wht:#FFFFFF;
+  --pink:#FF3EB5; --cyan:#45E3FF; --yellow:#FFE500; --purple:#9D5CFF; --orange:#FFB300;
+  --base:#C9CDD3;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--lime);color:var(--wht);font-family:'DM Sans',sans-serif;min-height:100vh}
+.app{max-width:430px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:96px}
+button{font-family:inherit;cursor:pointer;border:none}
+.mono{font-family:'JetBrains Mono',monospace}
+h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;letter-spacing:-.5px}
+.asvg{display:inline-block;vertical-align:middle}
+
+/* header */
+.hdr{display:flex;align-items:center;gap:10px;padding:16px 18px;position:sticky;top:0;background:var(--blk);z-index:20}
+.hdr .asvg{width:30px;height:30px;color:var(--lime)}
+.hdr .brand{font-family:'Archivo Black';font-size:19px;color:var(--wht)}
+.hdr .chain{font-size:9px;color:var(--lime);letter-spacing:1.4px;text-transform:uppercase;font-weight:700}
+.vchipHdr{font-size:9px;font-weight:900;color:var(--blk);background:var(--lime);border:2px solid var(--lime);padding:2px 7px;margin-left:6px;display:none;text-transform:lowercase}
+.vchipHdr.on{display:inline-block}
+.bal{margin-left:auto;display:flex;align-items:center;gap:8px}
+.bal .amt{font-weight:900;font-size:15px;color:var(--wht)}
+.btn-dep{background:var(--lime);color:var(--blk);font-weight:900;font-size:13px;padding:9px 16px;border:3px solid var(--blk);box-shadow:3px 3px 0 var(--limehot);text-transform:lowercase}
+.btn-dep:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--limehot)}
+
+.livebar{display:flex;align-items:center;gap:8px;padding:10px 18px;font-size:10.5px;font-weight:900;color:var(--blk);background:var(--limehot);border-bottom:4px solid var(--blk);text-transform:uppercase;letter-spacing:.6px}
+.livedot{width:9px;height:9px;border-radius:50%;background:var(--blk);opacity:.35}
+.livebar.on .livedot{opacity:1;animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;background:var(--blk);z-index:30}
+.nav button{flex:1;background:var(--blk);color:#777;font-size:11px;font-weight:900;padding:13px 0 15px;display:flex;flex-direction:column;gap:3px;align-items:center;text-transform:lowercase}
+.nav button.on{color:var(--lime)}
+.nav .ic{font-size:19px}
+
+/* hero */
+.hero{padding:26px 18px 8px}
+.hero h1{font-size:30px;line-height:1.05;color:var(--blk)}
+.hero h1 em{font-style:normal;background:var(--blk);color:var(--lime);padding:0 8px;display:inline-block;transform:rotate(-1.5deg)}
+.hero p{color:var(--blk);font-size:13.5px;margin-top:10px;font-weight:700}
+.trust{display:flex;gap:7px;padding:14px 18px;flex-wrap:wrap}
+.tchip{font-size:10.5px;font-weight:900;color:var(--blk);border:3px solid var(--blk);padding:5px 10px;background:var(--wht);box-shadow:3px 3px 0 var(--blk);text-transform:lowercase}
+
+/* pack cards */
+.packs{padding:8px 18px;display:grid;gap:16px}
+.pack{border:4px solid var(--blk);padding:18px;display:flex;gap:16px;align-items:center;text-align:left;color:var(--wht);position:relative;overflow:hidden;box-shadow:6px 6px 0 var(--blk);background:var(--pink)}
+.pack.live:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--blk)}
+.pack .art{width:66px;height:88px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:900;border:3px solid var(--blk);background:var(--blk);color:var(--lime);font-family:'Archivo Black';font-size:18px}
+.pack .art .asvg{width:30px;height:30px;color:var(--lime)}
+.pack h3{font-size:19px;color:var(--wht);text-shadow:2px 2px 0 var(--blk)}
+.pack .sub{font-size:11.5px;margin-top:3px;font-weight:800;color:var(--blk)}
+.pack .row{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.pill{font-size:9.5px;font-weight:900;padding:4px 9px;letter-spacing:.4px;border:2.5px solid var(--blk);text-transform:uppercase}
+.pill.ev{background:var(--lime);color:var(--blk)}
+.pill.bb{background:var(--yellow);color:var(--blk)}
+.pack .price{margin-left:auto;font-family:'Archivo Black';font-size:20px;color:var(--wht);text-shadow:2px 2px 0 var(--blk)}
+.pack.soon{background:repeating-linear-gradient(45deg,#151515,#151515 14px,#1f1f1f 14px,#1f1f1f 28px);cursor:default}
+.pack.soon .art{background:#222;color:#666}
+.pack.soon .art .asvg{color:#555}
+.pack.soon h3{color:#888;text-shadow:none}
+.pack.soon .price{color:#555;text-shadow:none}
+.stamp{position:absolute;right:-34px;top:16px;transform:rotate(28deg);background:var(--lime);color:var(--blk);font-family:'Archivo Black';font-size:11px;padding:5px 42px;border:3px solid var(--blk);text-transform:lowercase}
+
+/* vault strip */
+.vault{margin:6px 18px 0;background:var(--blk);padding:14px 16px;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.vault .hd{font-size:12px;color:var(--lime);margin-bottom:8px}
+.vault .row{display:flex;flex-wrap:wrap;gap:6px}
+.vchip{display:flex;align-items:center;gap:6px;background:#161616;border:2px solid #2b2b2b;padding:4px 9px;font-size:11px;font-weight:900;color:var(--wht)}
+.vchip img{width:16px;height:16px;border-radius:50%;object-fit:cover}
+.vault .note{font-size:10px;color:#9a9a9a;margin-top:9px;font-weight:700}
+.vault .note b{color:var(--lime)}
+
+/* detail */
+.back{background:none;color:var(--blk);font-size:14px;font-weight:900;padding:14px 18px 0;text-transform:lowercase}
+.pd{padding:10px 18px}
+.pd .stage{height:200px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border:4px solid var(--blk);background:var(--pink);box-shadow:6px 6px 0 var(--blk)}
+.stage .burst{position:absolute;font-family:'Archivo Black';color:rgba(255,255,255,.35);font-size:60px;user-select:none}
+.bigpack{width:112px;height:152px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:'Archivo Black';font-size:24px;border:4px solid var(--blk);background:var(--blk);color:var(--lime);box-shadow:8px 8px 0 rgba(0,0,0,.35);animation:float 3s ease-in-out infinite;z-index:2}
+.bigpack .asvg{width:38px;height:38px;color:var(--lime)}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+.pd h2{font-size:24px;margin-top:18px;color:var(--blk);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.badge-bb{font-family:'DM Sans';font-size:10px;font-weight:900;color:var(--blk);border:3px solid var(--blk);padding:4px 9px;background:var(--yellow);text-transform:uppercase}
+.guarantee{margin-top:14px;background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:12px 14px;font-size:13.5px;font-weight:800;color:var(--blk)}
+.guarantee b{background:var(--lime);padding:0 5px}
+.odds{margin-top:18px;background:var(--blk);padding:16px;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.odds .ot{font-size:11px;letter-spacing:1.5px;color:var(--lime);font-weight:900;margin-bottom:12px;display:flex;justify-content:space-between;font-family:'Archivo Black'}
+.odds .ot a{color:var(--pink);font-size:10px;text-decoration:none;font-weight:900}
+.obar{display:flex;height:12px;border:2.5px solid #2b2b2b;margin-bottom:14px}
+.tierrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:2px solid #1f1f1f;font-size:13px}
+.tierrow:last-child{border:none}
+.tierrow img.ticon{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2.5px solid var(--wht);flex-shrink:0;background:#222}
+.tname{font-weight:900;width:86px;font-size:11px;letter-spacing:.8px;text-transform:uppercase}
+.tband{color:#bbb;font-size:12px;font-weight:700}
+.tband .tk{color:var(--wht);font-weight:900}
+.tpct{margin-left:auto;font-weight:900;color:var(--wht);font-size:15px}
+.apv{margin-top:14px;background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:14px 16px;display:flex;align-items:center;color:var(--blk)}
+.apv .l{font-size:11px;letter-spacing:1.2px;font-weight:900;text-transform:uppercase}
+.apv .v{margin-left:auto;font-size:24px;font-family:'Archivo Black'}
+.apv .d{font-size:10px;font-weight:900;background:var(--lime);border:2.5px solid var(--blk);padding:3px 7px;margin-left:8px}
+.buy{margin-top:18px;width:100%;background:var(--blk);color:var(--lime);font-family:'Archivo Black';font-size:18px;padding:18px;border:4px solid var(--blk);box-shadow:6px 6px 0 var(--pink);text-transform:lowercase}
+.buy:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--pink)}
+.finebtm{text-align:center;color:var(--blk);font-size:10.5px;margin-top:12px;font-weight:700}
+
+/* rip theater */
+.theater{position:fixed;inset:0;background:var(--blk);z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column}
+.theater.on{display:flex}
+.card3d{width:220px;height:300px;perspective:1000px}
+.cardinner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.card3d.flip .cardinner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:5px solid var(--wht)}
+.face.backf{background:var(--lime)}
+.face.backf .asvg{width:70px;height:70px;color:var(--blk);animation:pulse .9s ease-in-out infinite}
+.face.backf .shares{color:var(--blk)}
+@keyframes pulse{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.18) rotate(4deg)}}
+.face.frontf{transform:rotateY(180deg);background:var(--wht);color:var(--blk)}
+.tickcirc{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#fff;border:4px solid var(--blk);overflow:hidden;background:#222}
+.tickcirc img{width:100%;height:100%;object-fit:cover}
+.face .co{font-size:13px;font-weight:900;max-width:190px;text-align:center;color:var(--blk)}
+.face .shares{font-size:12px;letter-spacing:2px;font-weight:900}
+.face .val{font-size:34px;font-family:'Archivo Black'}
+.face .tierlbl{font-size:11px;letter-spacing:2px;font-weight:900;padding:5px 14px;border:3px solid var(--blk);color:var(--blk);text-transform:uppercase}
+.tstate{color:var(--lime);font-size:14px;font-weight:900;margin-top:28px;letter-spacing:1.5px;font-family:'Archivo Black';text-transform:lowercase}
+.resbtns{display:none;gap:12px;margin-top:28px;width:300px;flex-direction:column}
+.resbtns.on{display:flex}
+.rb{padding:16px;font-size:15px;font-weight:900;border:4px solid var(--wht);text-transform:lowercase;font-family:'Archivo Black'}
+.rb.sell{background:var(--lime);color:var(--blk);border-color:var(--lime)}
+.rb.keep{background:var(--blk);color:var(--wht)}
+.confetti{position:absolute;width:10px;height:16px;top:-20px;animation:fall linear forwards;z-index:5}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* portfolio */
+.pf{padding:16px 18px}
+.pf .total{background:var(--blk);padding:18px;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.pf .total .l{font-size:11px;color:var(--lime);letter-spacing:1.5px;font-weight:900}
+.pf .total .v{font-size:34px;font-family:'Archivo Black';margin-top:4px;color:var(--wht)}
+.hold{display:flex;align-items:center;gap:12px;padding:12px 14px;border:4px solid var(--blk);background:var(--wht);color:var(--blk);margin-top:12px;box-shadow:5px 5px 0 var(--blk)}
+.hold .tc{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;color:#fff;flex-shrink:0;overflow:hidden;border:3px solid var(--blk);background:#222}
+.hold .tc img{width:100%;height:100%;object-fit:cover}
+.hold .nm{font-weight:900;font-size:14px}
+.hold .sub{color:#555;font-size:11px;font-weight:700}
+.hold .rt{margin-left:auto;text-align:right}
+.hold .rv{font-weight:900;font-size:15px}
+.sellmini{background:var(--lime);color:var(--blk);font-size:10.5px;font-weight:900;border:2.5px solid var(--blk);padding:4px 10px;margin-top:5px}
+.empty{color:var(--blk);text-align:center;padding:50px 20px;font-size:14px;line-height:1.6;font-weight:800}
+
+/* modals */
+.modal{position:fixed;inset:0;background:rgba(10,10,10,.85);z-index:60;display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{width:100%;max-width:430px;background:var(--lime);border-top:5px solid var(--blk);padding:22px 20px 36px;animation:up .25s ease;max-height:86vh;overflow-y:auto}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+.sheet h3{font-size:20px;color:var(--blk);margin-bottom:4px}
+.sheet .sub{color:var(--blk);font-size:12px;margin-bottom:16px;font-weight:800}
+.paytabs{display:flex;gap:8px;margin-bottom:16px}
+.paytab{flex:1;background:var(--wht);border:3px solid var(--blk);color:var(--blk);padding:11px 0;font-weight:900;font-size:12.5px}
+.paytab.on{background:var(--blk);color:var(--lime)}
+.paybody{background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:16px;font-size:13px;color:var(--blk);line-height:1.6;font-weight:700}
+.chains{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chainp{font-size:10.5px;font-weight:900;border:2.5px solid var(--blk);padding:4px 10px;color:var(--blk);background:var(--limehot)}
+.addr{background:var(--blk);padding:10px;font-size:10.5px;word-break:break-all;margin-top:8px;color:var(--lime)}
+.warnbox{margin-top:10px;background:var(--yellow);border:3px solid var(--blk);padding:10px;font-size:11.5px;color:var(--blk);font-weight:900}
+.gobtn{width:100%;margin-top:16px;background:var(--blk);color:var(--lime);font-family:'Archivo Black';font-size:16px;padding:16px;text-transform:lowercase}
+.fair .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:2.5px solid rgba(10,10,10,.15);font-size:12px;color:var(--blk);font-weight:800}
+.fair .row span:last-child{max-width:200px;word-break:break-all;text-align:right}
+.toast{position:fixed;top:74px;left:50%;transform:translateX(-50%);background:var(--blk);color:var(--lime);font-weight:900;font-size:13px;padding:11px 20px;z-index:80;display:none;border:3px solid var(--lime)}
+.disclaimer{padding:28px 18px 12px;color:rgba(10,10,10,.55);font-size:9.5px;line-height:1.55;text-align:center;font-weight:700}
+.view{display:none}.view.on{display:block}
+
+/* onboarding */
+.obsteps{display:flex;gap:6px;margin-bottom:16px}
+.obstep{flex:1;height:8px;background:rgba(10,10,10,.18);border:2px solid var(--blk)}
+.obstep.done{background:var(--blk)}
+.obfield{margin-top:10px}
+.obfield label{display:block;font-size:10.5px;font-weight:900;color:var(--blk);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.obfield input{width:100%;padding:12px;border:3px solid var(--blk);font-family:'DM Sans';font-weight:800;font-size:14px;background:var(--wht);color:var(--blk)}
+.regions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.regbtn{background:var(--wht);border:3px solid var(--blk);padding:12px 10px;font-weight:900;font-size:13px;color:var(--blk);text-align:left;box-shadow:3px 3px 0 var(--blk)}
+.regbtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--blk)}
+.regbtn small{display:block;font-size:9px;font-weight:800;color:#777;text-transform:uppercase;margin-top:2px}
+.blocked{background:var(--blk);border:4px solid var(--blk);padding:18px;color:var(--wht);margin-top:6px}
+.blocked h4{font-family:'Archivo Black';color:var(--pink);font-size:16px;text-transform:lowercase;margin-bottom:8px}
+.blocked p{font-size:12.5px;line-height:1.6;font-weight:700;color:#ccc}
+.blocked p b{color:var(--wht)}
+.kycrow{display:flex;align-items:center;gap:10px;background:var(--wht);border:3px solid var(--blk);padding:11px 13px;margin-top:8px;font-size:13px;font-weight:800;color:var(--blk)}
+.kycrow .st{margin-left:auto;font-size:10px;font-weight:900;padding:3px 8px;border:2px solid var(--blk);background:var(--yellow)}
+.kycrow .st.ok{background:var(--lime)}
+</style>
+</head>
+<body>
+<!-- ARCHER mark (original geometric bow-and-arrow, tangential to the robin-hood theme without using Robinhood's feather) -->
+<svg width="0" height="0" style="position:absolute"><defs><g id="archerMark">
+  <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="7"/>
+  <path d="M38 20 A42 42 0 0 1 38 80" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+  <line x1="38" y1="20" x2="38" y2="80" stroke="currentColor" stroke-width="4"/>
+  <line x1="24" y1="50" x2="80" y2="50" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+  <path d="M80 50 L66 41 M80 50 L66 59" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M24 50 L16 43 M24 50 L16 57" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>
+</g></defs></svg>
+<div class="app">
+
+  <div class="hdr">
+    <svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>
+    <div>
+      <div class="brand">archer<span class="vchipHdr" id="verChip">✓ verified</span></div>
+      <div class="chain">stock packs · on robinhood chain</div>
+    </div>
+    <div class="bal">
+      <div class="amt mono" id="balTxt">$0.00</div>
+      <button class="btn-dep" onclick="openDep()">deposit</button>
+    </div>
+  </div>
+
+  <div class="livebar" id="livebar"><span class="livedot"></span><span id="liveTxt">loading onchain prices…</span></div>
+
+  <!-- STORE -->
+  <div class="view on" id="v-store">
+    <div class="hero">
+      <h1>rip a pack.<br>win <em>1 full share</em><br>every time.</h1>
+      <p>real tokenized stocks · live onchain prices · instant 90% buyback · odds fully disclosed</p>
+    </div>
+    <div class="trust">
+      <span class="tchip">✓ 1 full share guaranteed</span>
+      <span class="tchip">90% instant buyback</span>
+      <span class="tchip">◈ provably fair</span>
+    </div>
+    <div class="packs" id="packGrid"></div>
+    <div class="vault" id="vaultBox"></div>
+    <div class="disclaimer">internal prototype · archer is an independent concept app built on robinhood chain and is not affiliated with, endorsed by, or sponsored by robinhood markets · live token prices read from robinhood chain (blockscout api; production reads chainlink aggregatorv3 feeds onchain) · token prices are total-return adjusted and may exceed headline share prices · stock tokens are not available to US, UK, canadian, or swiss persons — eligibility enforced via geo-ip and kyc document checks · not investment advice · 18+/21+ · odds as displayed · terms apply</div>
+  </div>
+
+  <!-- PACK DETAIL -->
+  <div class="view" id="v-detail">
+    <button class="back" onclick="show('store')">‹ all packs</button>
+    <div class="pd" id="pdBody"></div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div class="view" id="v-portfolio">
+    <div class="pf">
+      <div class="total"><div class="l">portfolio value</div><div class="v mono" id="pfTotal">$0.00</div></div>
+      <div id="pfList"></div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="on" id="nb-store" onclick="show('store')"><span class="ic">◨</span>packs</button>
+    <button id="nb-portfolio" onclick="show('portfolio')"><span class="ic">◧</span>portfolio</button>
+    <button onclick="openFair()"><span class="ic">◈</span>fairness</button>
+  </div>
+
+  <!-- RIP THEATER -->
+  <div class="theater" id="theater">
+    <div class="card3d" id="card3d">
+      <div class="cardinner">
+        <div class="face backf">
+          <svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>
+          <div class="shares">ripping…</div>
+        </div>
+        <div class="face frontf" id="cardFront"></div>
+      </div>
+    </div>
+    <div class="tstate" id="tstate">verifying seed…</div>
+    <div class="resbtns" id="resBtns">
+      <button class="rb sell" id="sellBtn"></button>
+      <button class="rb keep" onclick="keepIt()">keep in wallet</button>
+    </div>
+  </div>
+
+  <!-- ONBOARDING / KYC -->
+  <div class="modal" id="obModal">
+    <div class="sheet" id="obSheet"></div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div class="modal" id="depModal" onclick="if(event.target===this)this.classList.remove('on')">
+    <div class="sheet">
+      <h3>add funds</h3>
+      <div class="sub">settles as USDG on robinhood chain · powered by privy</div>
+      <div class="paytabs">
+        <button class="paytab on" onclick="payTab(this,'apple')"> apple pay</button>
+        <button class="paytab" onclick="payTab(this,'card')">💳 card</button>
+        <button class="paytab" onclick="payTab(this,'crypto')">⛓ crypto</button>
+      </div>
+      <div class="paybody" id="payApple">one tap with apple pay via <b>coinbase onramp</b>. funds land as USDG in your embedded wallet in seconds.</div>
+      <div class="paybody" id="payCard" style="display:none">debit/credit via <b>coinbase onramp</b>, with <b>stripe</b> fallback by region. 3DS supported.</div>
+      <div class="paybody" id="payCrypto" style="display:none">
+        send from any chain — we auto-bridge to robinhood chain:
+        <div class="chains"><span class="chainp">base</span><span class="chainp">arbitrum</span><span class="chainp">ethereum</span><span class="chainp">solana</span><span class="chainp">optimism</span><span class="chainp">polygon</span></div>
+        <div class="addr mono">0x7A3f…c4E9 · deposit.archer.eth</div>
+        <div class="warnbox">⚠ any supported chain works — deposits are detected and bridged automatically. no wrong-network traps.</div>
+      </div>
+      <button class="gobtn" onclick="addFunds()">add $250.00 (demo)</button>
+    </div>
+  </div>
+
+  <!-- FAIRNESS -->
+  <div class="modal" id="fairModal" onclick="if(event.target===this)this.classList.remove('on')">
+    <div class="sheet fair">
+      <h3>provably fair</h3>
+      <div class="sub">every rip is verifiable. server seed hash committed onchain before purchase.</div>
+      <div class="row"><span>server seed hash</span><span class="mono">0x8f3a…e21c</span></div>
+      <div class="row"><span>your client seed</span><span class="mono" id="fairClient">a7f2-9d1b</span></div>
+      <div class="row"><span>entropy block</span><span class="mono">#4,812,336</span></div>
+      <div class="row"><span>formula</span><span class="mono">keccak(server‖client‖blockhash)</span></div>
+      <div class="row"><span>prize price source</span><span>chainlink feed at rip block (24/5)</span></div>
+      <button class="gobtn" onclick="document.getElementById('fairModal').classList.remove('on')">verify any past rip →</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ============ LAUNCH CONFIG: single $25 pack, 5 well-known tickers ============
+   Addresses = canonical Robinhood Chain stock tokens (docs.robinhood.com/chain/contracts
+   + robinhoodchain.blockscout.com). Prices = live onchain snapshot 2026-07-12, refreshed
+   from Blockscout on load (production: Chainlink AggregatorV3 feeds).
+   Odds FIXED; EV recomputes from live prices (target ~96-98% of pack price).           */
+/* ROSTER = ONLY canonical tokens from docs.robinhood.com/chain/contracts —
+   tokens with matching tickers at other addresses are NOT Robinhood Stock Tokens. */
+const ROSTER = {
+  SLV :{addr:"0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f",n:"iShares Silver Trust",p:53.95,c:"#9AA5B1"},
+  BABA:{addr:"0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",n:"Alibaba",p:96.45,c:"#FF6A00"},
+  NVDA:{addr:"0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",n:"NVIDIA",p:196.53,c:"#76B900"},
+  TSLA:{addr:"0x322f0929c4625ed5bad873c95208d54e1c003b2d",n:"Tesla",p:428.32,c:"#E82127"},
+  SNDK:{addr:"0xb90a19ff0af67f7779aff50a882a9cff42446400",n:"Sandisk",p:1956.81,c:"#CC2229"}
+};
+Object.values(ROSTER).forEach(s=>s.icon=`https://cdn.robinhood.com/ncw_assets/logos/${s.addr}.png`);
+
+const PACK = { price:100, name:"starter pack",
+  tiers:[["BASE","var(--base)","SLV",44.0],["COMMON","var(--yellow)","BABA",48.0],
+         ["RARE","var(--cyan)","NVDA",6.0],["EPIC","var(--pink)","TSLA",1.6],
+         ["GRAIL","var(--orange)","SNDK",0.4]]};
+const SOON = [
+  {price:25, name:"mini pack",  note:"when sub-$50 tokens list"},
+  {price:250,name:"grail hunt", note:"bigger grails. same rules."},
+  {price:500,name:"whale pack", note:"bigger grails. same rules."}
+];
+/* $10K pilot vault (see README): shelf inventory backing the live pack */
+const VAULT = [["SLV",25],["BABA",25],["NVDA",5],["TSLA",2],["SNDK",1]];
+const BUYBACK=0.90;
+const ARCHER='<svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>';
+let balance=0, holdings=[], curWin=null, LIVE=false;
+/* eligibility: Stock Tokens are Reg S — offers restricted in US, UK, CA, CH.
+   production: geo-IP + KYC document country must BOTH pass (a VPN fails the doc check). */
+const REGIONS=[["🇸🇬","Singapore",true],["🇦🇪","UAE",true],["🇧🇷","Brazil",true],["🇲🇽","Mexico",true],
+               ["🇩🇪","Germany",true],["🇱🇹","Lithuania",true],["🇺🇸","United States",false],["🇬🇧","United Kingdom",false]];
+let user={signedIn:false,email:"",region:null,verified:false};
+
+const packEV=()=>PACK.tiers.reduce((a,[,,tk,o])=>a+ROSTER[tk].p*o/100,0);
+const $=id=>document.getElementById(id);
+const fmt=v=>"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
+function show(v){document.querySelectorAll(".view").forEach(x=>x.classList.remove("on"));$("v-"+v).classList.add("on");
+  ["store","portfolio"].forEach(n=>{const b=$("nb-"+n);if(b)b.classList.toggle("on",n===v)});
+  if(v==="portfolio")renderPF();window.scrollTo(0,0)}
+function renderBal(){$("balTxt").textContent=fmt(balance)}
+
+/* ---------- ONBOARDING / KYC ---------- */
+function steps(n){return `<div class="obsteps">${[0,1,2].map(i=>`<div class="obstep ${i<n?"done":""}"></div>`).join("")}</div>`}
+function openOnboarding(){renderOb(user.signedIn?(user.region?2:1):0);$("obModal").classList.add("on")}
+function renderOb(step){
+  const el=$("obSheet");
+  if(step===0){el.innerHTML=`${steps(0)}<h3>create your account</h3>
+    <div class="sub">powered by privy — email, passkey, or social. an embedded wallet is created for you.</div>
+    <div class="obfield"><label>email</label><input id="obEmail" type="email" placeholder="you@collector.xyz"></div>
+    <button class="gobtn" onclick="obSignIn()">continue with passkey ◈</button>`;}
+  else if(step===1){el.innerHTML=`${steps(1)}<h3>confirm your region</h3>
+    <div class="sub">stock tokens can't be offered in every country. we check geo-ip now and match it against your id at verification — <b>both must pass.</b></div>
+    <div class="regions">${REGIONS.map(([f,n,ok],i)=>`<button class="regbtn" onclick="obRegion(${i})">${f} ${n}<small>${ok?"available":"restricted"}</small></button>`).join("")}</div>
+    <div class="sub" style="margin-top:12px;font-size:10.5px">demo: tap a region to simulate the geo-ip result</div>`;}
+  else if(step===-1){const r=user.region;el.innerHTML=`${steps(1)}<h3>not available in your region</h3>
+    <div class="blocked"><h4>archer can't serve ${r[0]} ${r[1]} right now</h4>
+    <p>robinhood stock tokens are <b>Reg S securities</b> — they may not be offered or sold to persons in the ${r[1]==="United States"?"US":r[1]}, and that restriction is enforced, not decorative.</p>
+    <p style="margin-top:8px">we check <b>geo-ip, payment country, and the country on your verified id</b>. a vpn changes one of three — verification will still fail, and any balance would be returned. we'd rather tell you straight.</p>
+    <p style="margin-top:8px">drop your email and we'll ping you if this changes.</p></div>
+    <button class="gobtn" onclick="renderOb(1)">‹ back</button>`;}
+  else if(step===2){el.innerHTML=`${steps(2)}<h3>verify your identity</h3>
+    <div class="sub">one-time kyc via persona. takes ~2 minutes. required before your first deposit.</div>
+    <div class="kycrow">📄 government id <span class="st" id="k1">pending</span></div>
+    <div class="kycrow">🤳 liveness selfie <span class="st" id="k2">pending</span></div>
+    <div class="kycrow">🌍 id country matches geo-ip <span class="st" id="k3">pending</span></div>
+    <div class="kycrow">🧾 sanctions / pep screen <span class="st" id="k4">pending</span></div>
+    <button class="gobtn" id="kycBtn" onclick="obKyc()">start verification →</button>`;}
+  else{el.innerHTML=`${steps(3)}<h3>you're in ✓</h3>
+    <div class="sub">account created · region cleared · identity verified</div>
+    <div class="paybody">wallet <b class="mono">0x7A3f…c4E9</b> is live on robinhood chain. add funds and rip your first pack — every pack pays a full share, guaranteed.</div>
+    <button class="gobtn" onclick="obDone()">let's rip →</button>`;}
+}
+function obSignIn(){user.signedIn=true;user.email=($("obEmail")?.value)||"demo@archer.xyz";renderOb(1)}
+function obRegion(i){user.region=REGIONS[i];if(!REGIONS[i][2]){renderOb(-1)}else{renderOb(2)}}
+function obKyc(){
+  const ids=["k1","k2","k3","k4"];$("kycBtn").textContent="verifying…";
+  ids.forEach((id,i)=>setTimeout(()=>{const e=$(id);e.textContent="✓ passed";e.classList.add("ok");
+    if(i===ids.length-1){user.verified=true;setTimeout(()=>renderOb(3),400)}},500+i*550));
+}
+function obDone(){$("obModal").classList.remove("on");$("verChip").classList.add("on");toast("verified ✓ — welcome to archer");openDep()}
+const needOb=()=>!(user.signedIn&&user.verified);
+
+/* ---------- LIVE PRICES ---------- */
+async function loadLive(){
+  try{
+    const r=await fetch("https://robinhoodchain.blockscout.com/api/v2/tokens?type=ERC-20");
+    const j=await r.json();
+    const byAddr={};j.items.forEach(it=>{if(it.exchange_rate)byAddr[it.address_hash.toLowerCase()]=it});
+    let hits=0;
+    for(const tk in ROSTER){const it=byAddr[ROSTER[tk].addr];
+      if(it){ROSTER[tk].p=parseFloat(it.exchange_rate);if(it.icon_url)ROSTER[tk].icon=it.icon_url;hits++}}
+    if(hits>=3){LIVE=true;
+      $("livebar").classList.add("on");
+      $("liveTxt").textContent=`live · ${hits}/5 tickers priced onchain · robinhood chain · ${new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}`;
+    }else{throw new Error("thin")}
+  }catch(e){
+    $("liveTxt").textContent="onchain price snapshot · 2026-07-12 (live fetch unavailable)";
+  }
+  renderStore();
+}
+
+/* ---------- STORE ---------- */
+function renderStore(){
+  const ev=packEV(), top=Math.max(...PACK.tiers.map(([,,tk])=>ROSTER[tk].p));
+  const topTk=PACK.tiers[PACK.tiers.length-1][2];
+  $("packGrid").innerHTML=`
+    <button class="pack live" onclick="openPack()">
+      <div class="art">${ARCHER}$${PACK.price}</div>
+      <div><h3>${PACK.name}</h3><div class="sub">1 guaranteed full share · top prize ${fmt(top)} ${topTk}</div>
+        <div class="row"><span class="pill ev">~${(ev/PACK.price*100).toFixed(0)}% ev</span><span class="pill bb">90% buyback</span></div></div>
+      <div class="price">$${PACK.price}</div>
+    </button>`
+    + SOON.map(p=>`
+    <div class="pack soon">
+      <div class="stamp">coming soon</div>
+      <div class="art">${ARCHER}$${p.price}</div>
+      <div><h3>${p.name}</h3><div class="sub" style="color:#777">${p.note}</div></div>
+      <div class="price">$${p.price}</div>
+    </div>`).join("");
+  const invTotal=VAULT.reduce((a,[tk,q])=>a+q*ROSTER[tk].p,0);
+  $("vaultBox").innerHTML=`<div class="hd">the quiver · verifiable onchain</div>
+    <div class="row">${VAULT.map(([tk,q])=>`<span class="vchip"><img src="${ROSTER[tk].icon}" onerror="this.remove()">${q}× ${tk}</span>`).join("")}</div>
+    <div class="note">every prize is pre-held in the treasury — <b>${fmt(invTotal)}</b> of stock tokens on the shelf right now. don't trust the top prize exists? read the chain.</div>`;
+}
+
+function openPack(){
+  const ev=packEV();
+  $("pdBody").innerHTML=`
+    <div class="stage"><span class="burst" style="top:8px;left:10px">★</span><span class="burst" style="bottom:4px;right:14px;font-size:80px">!</span>
+      <div class="bigpack">${ARCHER}$${PACK.price}</div></div>
+    <h2>${PACK.name} <span class="badge-bb">🔥 90% buyback</span></h2>
+    <div class="guarantee">🎯 <b>1 full share guaranteed</b> — every pack pays out a whole share of a real robinhood chain stock token. no fractions, no dust.</div>
+    <div class="odds">
+      <div class="ot"><span>pack odds · ${LIVE?"live onchain":"snapshot"}</span><a href="#" onclick="openFair();return false">provably fair ◈</a></div>
+      <div class="obar">${PACK.tiers.map(([,c,,o])=>`<div style="flex:${o};background:${c}"></div>`).join("")}</div>
+      ${PACK.tiers.map(([tn,c,tk,o])=>{const s=ROSTER[tk];
+        return `<div class="tierrow"><img class="ticon" src="${s.icon}" onerror="this.style.visibility='hidden'">
+          <span class="tname" style="color:${c}">${tn}</span>
+          <span class="tband"><span class="tk">${tk}</span> · ${s.n}<br>1.00 share = ${fmt(s.p)}</span>
+          <span class="tpct">${o}%</span></div>`}).join("")}
+    </div>
+    <div class="apv"><span class="l">avg pull value</span><span class="v mono">${fmt(ev)}</span><span class="d">${(ev/PACK.price*100).toFixed(1)}% of price</span></div>
+    <button class="buy" id="buyBtn" onclick="buyRip()">${needOb()?`sign up to rip — $${PACK.price}.00`:balance>=PACK.price?`rip it — $${PACK.price}.00`:`deposit to rip — $${PACK.price}.00`}</button>
+    <div class="finebtm">${LIVE?"live prices read from robinhood chain (chainlink-fed, 24/5)":"snapshot prices"} · token prices are total-return adjusted · odds fixed, ev floats with the market</div>`;
+  show("detail");
+}
+
+/* ---------- RIP ---------- */
+function weightedTier(){let r=Math.random()*100,acc=0;
+  for(let i=0;i<PACK.tiers.length;i++){acc+=PACK.tiers[i][3];if(r<acc)return i}return 0}
+function buyRip(){
+  if(needOb()){openOnboarding();return}
+  if(balance<PACK.price){openDep();return}
+  balance-=PACK.price;renderBal();
+  const ti=weightedTier(),[tn,c,tk]=PACK.tiers[ti],s=ROSTER[tk];
+  curWin={tk,name:s.n,price:s.p,tierName:tn,tierColor:c,icon:s.icon,c:s.c,big:ti>=2};
+  const th=$("theater");th.classList.add("on");$("card3d").classList.remove("flip");$("resBtns").classList.remove("on");
+  $("tstate").textContent="verifying seed… ✓ commit matched";
+  document.querySelectorAll(".confetti").forEach(e=>e.remove());
+  setTimeout(()=>{$("tstate").textContent="reading chainlink feed…"},700);
+  setTimeout(()=>{
+    $("cardFront").innerHTML=`<span class="tickcirc" style="background:${curWin.c}"><img src="${curWin.icon}" onerror="this.remove()"></span>
+      <div class="co">${curWin.name}</div><div class="shares">1.00 share · ${curWin.tk}</div>
+      <div class="val mono">${fmt(curWin.price)}</div>
+      <div class="tierlbl" style="background:${curWin.tierColor}">${curWin.tierName}</div>`;
+    $("card3d").classList.add("flip");
+    $("tstate").textContent=curWin.big?"🔥 big hit":"";
+    $("sellBtn").textContent=`sell back instantly · ${fmt(curWin.price*BUYBACK)} (90%)`;
+    $("resBtns").classList.add("on");
+    if(curWin.big)confetti();
+  },1600);
+}
+function confetti(){const cols=["#8ACE00","#FF3EB5","#45E3FF","#FFE500","#fff"];
+  for(let i=0;i<80;i++){const d=document.createElement("div");d.className="confetti";
+  d.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%5]};animation-duration:${1.5+Math.random()*1.6}s;animation-delay:${Math.random()*.7}s`;
+  $("theater").appendChild(d)}}
+function closeTheater(){$("theater").classList.remove("on")}
+$("sellBtn").onclick=()=>{balance+=curWin.price*BUYBACK;renderBal();closeTheater();toast(`sold ${curWin.tk} — ${fmt(curWin.price*BUYBACK)} added`)};
+function keepIt(){holdings.push(curWin);closeTheater();toast(`1 ${curWin.tk} added to portfolio`);show("portfolio")}
+
+/* ---------- PORTFOLIO ---------- */
+function renderPF(){
+  const tot=holdings.reduce((a,h)=>a+(ROSTER[h.tk]?.p??h.price),0);$("pfTotal").textContent=fmt(tot);
+  $("pfList").innerHTML=holdings.length?holdings.map((h,i)=>{
+    const live=ROSTER[h.tk]?.p??h.price;
+    return `<div class="hold"><span class="tc" style="background:${h.c}"><img src="${h.icon}" onerror="this.remove()"></span>
+      <div><div class="nm">${h.name}</div><div class="sub">1.00 share · ${h.tierName} pull · ${h.tk}</div></div>
+      <div class="rt"><div class="rv mono">${fmt(live)}</div>
+      <button class="sellmini" onclick="pfSell(${i})">sell 90% · ${fmt(live*BUYBACK)}</button></div></div>`}).join("")
+    :`<div class="empty">no shares yet.<br>rip a pack — every single one pays a full share.</div>`;
+}
+function pfSell(i){const h=holdings.splice(i,1)[0];const live=ROSTER[h.tk]?.p??h.price;
+  balance+=live*BUYBACK;renderBal();renderPF();toast(`sold ${h.tk} — ${fmt(live*BUYBACK)} added`)}
+
+/* ---------- DEPOSIT + FAIRNESS ---------- */
+function openDep(){if(needOb()){openOnboarding();return}$("depModal").classList.add("on")}
+function payTab(btn,k){document.querySelectorAll(".paytab").forEach(b=>b.classList.remove("on"));btn.classList.add("on");
+  ["Apple","Card","Crypto"].forEach(x=>$("pay"+x).style.display="none");$("pay"+k[0].toUpperCase()+k.slice(1)).style.display="block"}
+function addFunds(){balance+=250;renderBal();$("depModal").classList.remove("on");toast("$250.00 USDG deposited");
+  const b=$("buyBtn");if(b)b.textContent=balance>=PACK.price?`rip it — $${PACK.price}.00`:`deposit to rip — $${PACK.price}.00`}
+function openFair(){$("fairClient").textContent=Math.random().toString(16).slice(2,6)+"-"+Math.random().toString(16).slice(2,6);$("fairModal").classList.add("on")}
+
+renderBal();renderStore();loadLive();
+</script>
+</body>
+</html>
