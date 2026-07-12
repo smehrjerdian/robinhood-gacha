@@ -24,19 +24,19 @@ Inventory is restricted to the **canonical token list at docs.robinhood.com/chai
 
 Why this works: with strictly decreasing odds and this price ladder, the $96→$197 gap between BABA and NVDA forces real weight onto TSLA/SNDK to reach 97% EV — one SNDK per ~100 packs is what funds the honest-looking (and honest) EV badge. Per 100 packs: $10,000 in, ~$6,145 buyback cash out, ~$2,926 in kept tokens, **~$929 margin**. The dial: money-mode (USAR 27/SLV 40/BABA 24/NVDA 7/TSLA 1.9/SNDK 0.1) shows 73.6% EV but clears $31.56/pack — 3.4× the margin at the cost of the EV badge.
 
-**Minimum inventory to launch** (covers a ~50-pack opening run; buybacks recycle to the shelf):
+**$20K launch treasury** (covers a ~150-pack opening run with zero recycling assumptions; buybacks recycle ~70% of payouts back to the shelf, stretching effective coverage ~3×):
 
-| Ticker | Qty | Cost |
-|---|---|---|
-| USAR | 20 | $371 |
-| SLV | 20 | $1,079 |
-| BABA | 15 | $1,447 |
-| NVDA | 6 | $1,179 |
-| TSLA | 3 | $1,285 |
-| SNDK | 1 | $1,957 |
-| **Shelf total** | | **$7,318** |
+| Ticker | Qty | Cost | Covers |
+|---|---|---|---|
+| USAR | 50 | $927 | 161 packs |
+| SLV | 45 | $2,428 | 155 packs |
+| BABA | 40 | $3,858 | 148 packs |
+| NVDA | 15 | $2,948 | 167 packs |
+| TSLA | 5 | $2,142 | 167 packs |
+| SNDK | 2 | $3,914 | 200 packs |
+| **Shelf total** | | **$16,216** | |
 
-Plus buyback USDG float $1,500 and gas/infra ~$300 → **~$9,120 all-in — inside $10K.** Watch-outs at this EV: margin is thin ($9.29/pack), so variance matters — a grail hits every ~100 packs and costs ~211 packs of margin to earn back (that's what 97.5% EV means; volume smooths it). A single SNDK sell-back (~$1,761) exceeds the float: pause the grail tier after a hit until revenue restocks it.
+Plus buyback USDG float **$3,000** and gas/infra ~$500 → **~$19,716 all-in.** The upgrade over the $10K version: 2 SNDK escrowed (the grail tier survives a hit without pausing), and a grail sell-back (~$1,761) now fits inside the float with room to spare. Margin is ~$9.29/pack at these odds, so a grail costs ~211 packs of margin to earn back — volume smooths it, and the fatter treasury is what lets you ride out the variance instead of flinching. The pack page also renders a "what's in the pack" series sheet: every 100-pack series holds exactly 31 USAR + 29 SLV + 27 BABA + 9 NVDA + 3 TSLA + 1 SNDK — the contents literally are the odds, committable onchain per series.
 
 ## Status
 

@@ -104,6 +104,19 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
 .tband{color:#bbb;font-size:12px;font-weight:700}
 .tband .tk{color:var(--wht);font-weight:900}
 .tpct{margin-left:auto;font-weight:900;color:var(--wht);font-size:15px}
+/* what's in the pack — ticker cards */
+.contents{margin-top:18px;background:var(--blk);padding:16px;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.contents .ot{font-size:11px;letter-spacing:1.5px;color:var(--lime);font-weight:900;margin-bottom:4px;font-family:'Archivo Black'}
+.contents .sub2{font-size:10.5px;color:#9a9a9a;font-weight:700;margin-bottom:12px}
+.cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.scard{position:relative;background:#111;border:3px solid var(--tc,#555);padding:12px 12px 11px;overflow:hidden}
+.scard::after{content:"";position:absolute;right:-18px;top:-18px;width:52px;height:52px;background:var(--tc);opacity:.14;transform:rotate(45deg)}
+.scard .stk{font-family:'Archivo Black';font-size:22px;color:var(--tc);letter-spacing:-.5px;line-height:1}
+.scard .snm{font-size:9.5px;color:#9a9a9a;font-weight:800;margin-top:3px;text-transform:lowercase}
+.scard .spv{font-size:12.5px;color:var(--wht);font-weight:900;margin-top:8px}
+.scard .spv small{color:#9a9a9a;font-size:9px;font-weight:800}
+.scard .scnt{position:absolute;top:8px;right:8px;background:var(--tc);color:var(--blk);font-weight:900;font-size:11px;padding:2px 8px;border:2px solid var(--blk)}
+.scard .stier{display:inline-block;margin-top:7px;font-size:8.5px;font-weight:900;letter-spacing:1.2px;color:var(--tc);border:2px solid var(--tc);padding:2px 7px;text-transform:uppercase}
 .apv{margin-top:14px;background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:14px 16px;display:flex;align-items:center;color:var(--blk)}
 .apv .l{font-size:11px;letter-spacing:1.2px;font-weight:900;text-transform:uppercase}
 .apv .v{margin-left:auto;font-size:24px;font-family:'Archivo Black'}
@@ -349,7 +362,7 @@ const SOON = [
   {price:500,name:"whale pack", note:"bigger grails. same rules."}
 ];
 /* pilot vault (see README): minimum shelf inventory backing the live pack */
-const VAULT = [["USAR",20],["SLV",20],["BABA",15],["NVDA",6],["TSLA",3],["SNDK",1]];
+const VAULT = [["USAR",50],["SLV",45],["BABA",40],["NVDA",15],["TSLA",5],["SNDK",2]];
 const BUYBACK=0.90;
 const ARCHER='<svg class="asvg" viewBox="0 0 100 100"><use href="#archerMark"/></svg>';
 let balance=0, holdings=[], curWin=null, curPack=PACKS[0], LIVE=false;
@@ -468,6 +481,19 @@ function openPack(i){
           <span class="tname" style="color:${c}">${tn}</span>
           <span class="tband"><span class="tk">${tk}</span> · ${s.n}<br>1.00 share = ${fmt(s.p)}</span>
           <span class="tpct">${o}%</span></div>`}).join("")}
+    </div>
+    <div class="contents">
+      <div class="ot">what's in the pack</div>
+      <div class="sub2">every 100-pack series holds exactly these 100 shares — the contents ARE the odds. series composition committed onchain before sale.</div>
+      <div class="cardgrid">${curPack.tiers.map(([tn,c,tk,o])=>{const s=ROSTER[tk];
+        return `<div class="scard" style="--tc:${c}">
+          <span class="scnt">×${o} ${o===1?"share":"shares"}</span>
+          <div class="stk">$${tk}</div>
+          <div class="snm">${s.n}</div>
+          <div class="spv">${fmt(s.p)} <small>/ SHARE</small></div>
+          <span class="stier">${tn}</span>
+        </div>`}).join("")}
+      </div>
     </div>
     <div class="apv"><span class="l">avg pull value</span><span class="v mono">${fmt(ev)}</span><span class="d">${(ev/curPack.price*100).toFixed(1)}% of price</span></div>
     <button class="buy" id="buyBtn" onclick="buyRip()">${needOb()?`sign up to rip — $${curPack.price}.00`:balance>=curPack.price?`rip it — $${curPack.price}.00`:`deposit to rip — $${curPack.price}.00`}</button>
