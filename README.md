@@ -50,6 +50,18 @@ Fair-launched on Robinhood Chain via **Bankr**, with creator swap-fee share rout
 - **Burn-to-re-roll.** Don't like your pull? Burn 500 $ARCHER + a $75 re-rip fee for one fresh draw on the same pack (the surrendered prize returns to the vault). A token sink at the peak-excitement moment, priced so adverse selection — users only re-roll duds — can't drain the treasury: surrendered dud + fee ≈ the EV of the fresh draw.
 - **Staker-gated packs.** Limited series (rarer grails, collab packs) rippable only by staked wallets.
 - **Fee-free swap days & early access** for top-tier stakers.
+- **🎟 Grail Raffles — the flagship burn sink.** Raffle off a whole high-value share (SNDK, TSLA); entries are purchasable *only by burning* $ARCHER. See funding model below — the grail is never drawn until its cost is recouped.
+
+### Grail raffle funding model (burn → hard cash → prize)
+
+The rule that makes raffles self-funding instead of a treasury leak:
+
+1. **1 ticket = burn 1,000 $ARCHER.** The ticket's USD value is snapshotted at purchase.
+2. **50% offset sale:** for every ticket burned, the treasury sells 500 $ARCHER from its own allocation into the same demand — banking hard USDG into the raffle pot. Net supply still falls by 500/ticket, so every raffle is deflationary AND cash-funded.
+3. **Draw condition:** the raffle only executes when **pot ≥ 110% of the grail's live Chainlink price** (the 10% covers drift + gas). No draw until the grail is fully paid for — enforced onchain, visible as a progress bar.
+4. **Draw = commit-reveal** (same provably-fair rail as packs); winner receives the full share to their wallet.
+
+Worked example at launch price ($0.004): SNDK ≈ $1,957 → pot target $2,153 → ~$4,306 of burned value → **~1,077 tickets ≈ 1.08M $ARCHER burned per raffle (~0.11% of supply)**. Side effects: ticket buyers generate v4 pool fees on their way in (0.5% of that volume also restocks the quiver), and each completed raffle is a public burn event with a named winner — attention, deflation, and a funded prize in one loop.
 
 **Deflationary loop (drives attention):** 50% of all swap-fee revenue market-buys $ARCHER and burns it; burn-to-re-roll compounds the sink; a live burn counter renders in-app and every burn is a social object ("🔥 12.4M $ARCHER burned"). The other 50% of fees restocks the prize vault — visible on the quiver page, so token volume literally refills the grails.
 

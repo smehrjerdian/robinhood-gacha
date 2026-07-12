@@ -237,6 +237,30 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
 .flystep:last-child{border:none}
 .flystep .n{width:22px;height:22px;flex-shrink:0;background:var(--lime);color:var(--blk);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:11px;border:2px solid var(--blk)}
 .flystep b{color:var(--wht)}
+
+/* grail raffle */
+.rhero{background:var(--blk);padding:18px;box-shadow:6px 6px 0 rgba(0,0,0,.25);position:relative;overflow:hidden}
+.rhero .rtag{font-family:'Archivo Black';font-size:11px;letter-spacing:2px;color:var(--pink);text-transform:uppercase}
+.rhero .rgrail{display:flex;align-items:center;gap:14px;margin-top:10px}
+.rgcard{width:92px;height:120px;flex-shrink:0;background:#111;border:3px solid var(--orange);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden}
+.rgcard::after{content:"";position:absolute;right:-16px;top:-16px;width:44px;height:44px;background:var(--orange);opacity:.16;transform:rotate(45deg)}
+.rgcard .t{font-family:'Archivo Black';font-size:19px;color:var(--orange)}
+.rgcard .p{font-size:11px;color:var(--wht);font-weight:900}
+.rgcard .s{font-size:8px;color:#9a9a9a;font-weight:800;letter-spacing:1px}
+.rhero h3{color:var(--wht);font-size:19px}
+.rhero .rsub{font-size:11.5px;color:#bbb;font-weight:700;margin-top:4px;line-height:1.5}
+.rprogwrap{margin-top:14px}
+.rprog{height:18px;border:3px solid #2b2b2b;background:#161616;position:relative}
+.rfill{height:100%;background:var(--lime);transition:width .4s}
+.rprogwrap .lbl{display:flex;justify-content:space-between;font-size:10px;color:#9a9a9a;font-weight:900;margin-top:5px;letter-spacing:.5px;text-transform:uppercase}
+.rprogwrap .lbl b{color:var(--lime)}
+.rstats{display:flex;gap:8px;margin-top:12px}
+.rstat{flex:1;background:#161616;border:2px solid #2b2b2b;padding:8px 10px}
+.rstat .l{font-size:8.5px;color:#9a9a9a;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.rstat .v{font-size:14px;color:var(--wht);font-weight:900;margin-top:2px}
+.rstat .v.pink{color:var(--pink)}
+.rwin{background:var(--wht);border:4px solid var(--blk);box-shadow:5px 5px 0 var(--blk);padding:14px;margin-top:14px;color:var(--blk);font-weight:800;font-size:12.5px}
+.rwin .who{font-family:'JetBrains Mono';font-size:11px}
 </style>
 </head>
 <body>
@@ -299,11 +323,15 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
     <button class="on" id="nb-store" onclick="show('store')"><span class="ic">◨</span>packs</button>
     <button id="nb-portfolio" onclick="show('portfolio')"><span class="ic">◧</span>portfolio</button>
     <button id="nb-token" onclick="show('token')"><span class="ic">◆</span>$archer</button>
+    <button id="nb-raffle" onclick="show('raffle')"><span class="ic">◎</span>raffle</button>
     <button onclick="openFair()"><span class="ic">◈</span>fairness</button>
   </div>
 
   <!-- $ARCHER TOKEN -->
   <div class="view" id="v-token"><div class="tkwrap" id="tokenBody"></div></div>
+
+  <!-- GRAIL RAFFLE -->
+  <div class="view" id="v-raffle"><div class="tkwrap" id="raffleBody"></div></div>
 
   <!-- RIP THEATER -->
   <div class="theater" id="theater">
@@ -420,8 +448,8 @@ const $=id=>document.getElementById(id);
 const fmt=v=>"$"+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2200)}
 function show(v){document.querySelectorAll(".view").forEach(x=>x.classList.remove("on"));$("v-"+v).classList.add("on");
-  ["store","portfolio","token"].forEach(n=>{const b=$("nb-"+n);if(b)b.classList.toggle("on",n===v)});
-  if(v==="portfolio")renderPF();if(v==="token")renderToken();window.scrollTo(0,0)}
+  ["store","portfolio","token","raffle"].forEach(n=>{const b=$("nb-"+n);if(b)b.classList.toggle("on",n===v)});
+  if(v==="portfolio")renderPF();if(v==="token")renderToken();if(v==="raffle")renderRaffle();window.scrollTo(0,0)}
 function renderBal(){$("balTxt").textContent=fmt(balance)}
 
 /* ---------- ONBOARDING / KYC ---------- */
@@ -683,6 +711,83 @@ function buyArcher(usd){
 }
 function stakeAll(){archerStaked+=archerBal;archerBal=0;toast(`staked — you're ${stakeTier()[1]} tier · ${bbPct()} buyback`);renderToken()}
 function unstakeAll(){archerBal+=archerStaked;archerStaked=0;toast("unstaked — back to 90% base buyback");renderToken()}
+
+/* ---------- GRAIL RAFFLE ----------
+   funding rule: 1 ticket = burn 1,000 $ARCHER. treasury offset-sells 50% of every
+   burn into the demand → hard USDG pot. draw ONLY when pot ≥ 110% of the grail's
+   live chainlink price. net supply falls 500/ticket — deflationary AND cash-funded. */
+const RAFFLE={grail:"SNDK", ticket:1000, offset:0.5, margin:1.10,
+  sold:670, yours:0, pot:670*1000*0.004*0.5, queue:["TSLA","NVDA"],
+  lastWin:{who:"0x91f…7a2c", prize:"1.00 TSLA", burned:"1.19M"}};
+const rTarget=()=>ROSTER[RAFFLE.grail].p*RAFFLE.margin;
+function renderRaffle(){
+  const g=ROSTER[RAFFLE.grail], tgt=rTarget(), pct=Math.min(100,RAFFLE.pot/tgt*100);
+  const tixUsd=RAFFLE.ticket*TOKEN.price;
+  $("raffleBody").innerHTML=`
+  <div class="rhero">
+    <div class="rtag">🎟 grail raffle · round #7</div>
+    <div class="rgrail">
+      <div class="rgcard"><div class="t">$${RAFFLE.grail}</div><div class="p">${fmt(g.p)}</div><div class="s">1.00 SHARE</div></div>
+      <div><h3>win a whole ${g.n} share</h3>
+        <div class="rsub">entries are <b style="color:var(--pink)">burn-only</b>. the draw unlocks when the pot fully covers the grail at live oracle price — never before.</div></div>
+    </div>
+    <div class="rprogwrap">
+      <div class="rprog"><div class="rfill" style="width:${pct}%"></div></div>
+      <div class="lbl"><span>pot <b>${fmt(RAFFLE.pot)}</b> / ${fmt(tgt)} target</span><span><b>${pct.toFixed(0)}%</b> funded</span></div>
+    </div>
+    <div class="rstats">
+      <div class="rstat"><div class="l">tickets burned</div><div class="v pink">🔥 ${fmtTok(RAFFLE.sold*RAFFLE.ticket)}</div></div>
+      <div class="rstat"><div class="l">entries</div><div class="v">${RAFFLE.sold.toLocaleString()}</div></div>
+      <div class="rstat"><div class="l">your entries</div><div class="v">${RAFFLE.yours}</div></div>
+    </div>
+  </div>
+  <div class="tkpanel">
+    <h4>burn to enter · ${fmtTok(RAFFLE.ticket)} $archer/ticket (~${fmt(tixUsd)})</h4>
+    <div class="qbtns">
+      <button class="qbtn" onclick="buyTix(1)">1 ticket</button>
+      <button class="qbtn" onclick="buyTix(5)">5 tickets</button>
+      <button class="qbtn" onclick="buyTix(25)">25 tickets</button>
+    </div>
+    <div class="note">your odds = your entries ÷ total entries. every ticket burns ${fmtTok(RAFFLE.ticket)} $archer; the treasury offset-sells 50% into the demand, banking hard USDG to the pot — net supply still falls ${fmtTok(RAFFLE.ticket*RAFFLE.offset)}/ticket. draw runs commit-reveal the moment the bar hits 110%.</div>
+  </div>
+  <div class="rwin">🏆 last round: <span class="who">${RAFFLE.lastWin.who}</span> won <b>${RAFFLE.lastWin.prize}</b> · ${RAFFLE.lastWin.burned} $archer burned</div>
+  <div class="flywheel" style="margin-top:14px">
+    <div class="hd">why the grail is always paid for</div>
+    <div class="flystep"><span class="n">1</span><span>ticket burns snapshot their USD value at purchase</span></div>
+    <div class="flystep"><span class="n">2</span><span>treasury offset-sale banks <b>50% of burn value as USDG</b></span></div>
+    <div class="flystep"><span class="n">3</span><span>draw is locked until <b>pot ≥ 110% of live grail price</b> — enforced onchain</span></div>
+    <div class="flystep"><span class="n">4</span><span>winner receives the full share · next grail queues up (${RAFFLE.queue.join(" → ")})</span></div>
+  </div>`;
+}
+function buyTix(n){
+  if(needOb()){openOnboarding();return}
+  const cost=n*RAFFLE.ticket;
+  if(archerBal<cost){toast("not enough $archer — grab some on the token tab");show("token");return}
+  archerBal-=cost;TOKEN.burned+=cost;
+  RAFFLE.sold+=n;RAFFLE.yours+=n;RAFFLE.pot+=cost*TOKEN.price*RAFFLE.offset;
+  toast(`🔥 burned ${fmtTok(cost)} $archer — ${n} ${n===1?"entry":"entries"} in`);
+  if(RAFFLE.pot>=rTarget())drawRaffle();else renderRaffle();
+}
+function drawRaffle(){
+  const g=ROSTER[RAFFLE.grail];
+  const win=Math.random()<RAFFLE.yours/RAFFLE.sold;
+  if(win){
+    holdings.push({tk:RAFFLE.grail,name:g.n,price:g.p,tierName:"GRAIL",tierColor:"var(--orange)",icon:g.icon,c:g.c});
+    toast(`🏆 YOU WON 1.00 ${RAFFLE.grail} (${fmt(g.p)})!`);confettiBody();
+    RAFFLE.lastWin={who:"you 🎉",prize:`1.00 ${RAFFLE.grail}`,burned:fmtTok(RAFFLE.sold*RAFFLE.ticket)};
+  }else{
+    const who="0x"+Math.random().toString(16).slice(2,5)+"…"+Math.random().toString(16).slice(2,6);
+    toast(`raffle drawn — ${who} won 1.00 ${RAFFLE.grail}`);
+    RAFFLE.lastWin={who,prize:`1.00 ${RAFFLE.grail}`,burned:fmtTok(RAFFLE.sold*RAFFLE.ticket)};
+  }
+  RAFFLE.grail=RAFFLE.queue.shift()||"SNDK";RAFFLE.queue.push("SNDK");
+  RAFFLE.sold=0;RAFFLE.yours=0;RAFFLE.pot=0;
+  renderRaffle();
+}
+function confettiBody(){const cols=["#8ACE00","#FF3EB5","#45E3FF","#FFE500","#fff"];
+  for(let i=0;i<80;i++){const d=document.createElement("div");d.className="confetti";
+  d.style.cssText=`position:fixed;left:${Math.random()*100}vw;background:${cols[i%5]};animation-duration:${1.5+Math.random()*1.6}s;animation-delay:${Math.random()*.7}s;z-index:90`;
+  document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}}
 
 renderBal();renderStore();loadLive();
 </script>
