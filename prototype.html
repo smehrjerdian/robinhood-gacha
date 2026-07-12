@@ -320,7 +320,7 @@ h1,h2,h3,.hd{font-family:'Archivo Black',sans-serif;text-transform:lowercase;let
     <div class="resbtns" id="resBtns">
       <button class="rb sell" id="sellBtn"></button>
       <button class="rb keep" onclick="keepIt()">keep in wallet</button>
-      <button class="rb keep" id="rerollBtn" style="border-color:var(--pink);color:var(--pink)" onclick="reRoll()">🔥 burn 500 $archer · re-roll</button>
+      <button class="rb keep" id="rerollBtn" style="border-color:var(--pink);color:var(--pink)" onclick="reRoll()">🔥 burn 500 $archer + $75 · re-roll</button>
     </div>
   </div>
 
@@ -570,10 +570,13 @@ function buyRip(){
     if(curWin.big)confetti();
   },1600);
 }
+const REROLL_FEE=75; // re-rip fee: prices out adverse selection (users only re-roll duds)
 function reRoll(){
   if(archerBal<REROLL_COST)return;
+  if(balance<REROLL_FEE){closeTheater();openDep();return}
   archerBal-=REROLL_COST;TOKEN.burned+=REROLL_COST;
-  toast(`🔥 burned ${REROLL_COST} $archer — re-rolling`);
+  balance-=REROLL_FEE;renderBal();
+  toast(`🔥 burned ${REROLL_COST} $archer + ${fmt(REROLL_FEE)} — re-rolling`);
   $("card3d").classList.remove("flip");$("resBtns").classList.remove("on");
   $("tstate").textContent="re-rolling… new seed committed";
   setTimeout(()=>{

@@ -47,7 +47,7 @@ Fair-launched on Robinhood Chain via **Bankr**, with creator swap-fee share rout
 **Holder utility (drives demand):**
 
 - **Staking tiers → better buyback.** Stake $ARCHER to raise your instant sell-back rate: 90% base → **92% Bronze / 94% Silver / 96% Gold**. The single number every ripper cares about becomes a reason to hold.
-- **Burn-to-re-roll.** Don't like your pull? Burn $ARCHER for one re-roll at the same odds. A pure token sink with real emotional utility at the peak-excitement moment.
+- **Burn-to-re-roll.** Don't like your pull? Burn 500 $ARCHER + a $75 re-rip fee for one fresh draw on the same pack (the surrendered prize returns to the vault). A token sink at the peak-excitement moment, priced so adverse selection — users only re-roll duds — can't drain the treasury: surrendered dud + fee ≈ the EV of the fresh draw.
 - **Staker-gated packs.** Limited series (rarer grails, collab packs) rippable only by staked wallets.
 - **Fee-free swap days & early access** for top-tier stakers.
 
